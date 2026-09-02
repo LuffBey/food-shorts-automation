@@ -199,18 +199,22 @@ class FlowClient:
         return True
 
     def _verify_upload(self, filename):
-        filename = os.path.basename(filename)
-        return bool(self.eval(f"""
-        (() => {{
-            const needle = {json.dumps(filename.lower())};
-            const bodyText = (document.body.innerText || '').toLowerCase();
-            if (bodyText.includes(needle)) return true;
-            return Array.from(document.querySelectorAll('img')).some(img =>
-                (img.alt || '').toLowerCase().includes(needle) ||
-                (img.src || '').toLowerCase().includes(needle)
-            );
-        }})()
-        """))
+           """Verify CDP assignment before Flow has rendered an asset preview."""
+           filename = os.path.basename(filename).lower()
+           return bool(self.eval(f"""
+           (() => {{
+             const needle = {json.dumps(filename)};
+             const bodyText = (document.body.innerText || '').toLowerCase();
+             if (bodyText.includes(needle)) return true;
+             if (Array.from(document.querySelectorAll('input[type="file"]')).some(input =>
+               Array.from(input.files || []).some(file => file.name.toLowerCase() === needle)
+             )) return true;
+             return Array.from(document.querySelectorAll('img')).some(img =>
+               (img.alt || '').toLowerCase().includes(needle) ||
+               (img.src || '').toLowerCase().includes(needle)
+             );
+           }})()
+           """))
 
     def set_start_frame(self, image_path):
         if not os.path.exists(image_path):
@@ -241,19 +245,48 @@ class FlowClient:
         return True
 
     def set_prompt(self, text):
-        self.click_el("el => el.getAttribute('data-slate-editor') === 'true'")
-        time.sleep(0.2)
-        self.cdp('Input.dispatchKeyEvent', {'type': 'keyDown', 'key': 'a', 'modifiers': 2})
-        self.cdp('Input.dispatchKeyEvent', {'type': 'keyUp', 'key': 'a'})
-        self.cdp('Input.dispatchKeyEvent', {'type': 'keyDown', 'key': 'Backspace'})
-        self.cdp('Input.dispatchKeyEvent', {'type': 'keyUp', 'key': 'Backspace'})
-        time.sleep(0.2)
-        for char in text:
-            self.cdp('Input.dispatchKeyEvent', {
-                'type': 'keyDown', 'text': char, 'unmodifiedText': char
-            })
-            self.cdp('Input.dispatchKeyEvent', {'type': 'keyUp'})
-            time.sleep(0.001)
+        """Set a Slate prompt reliably even when coordinate clicking is unavailable."""
+        focused = self.eval("""
+        (() => {
+          const el = document.querySelector('[data-slate-editor="true"]');
+          if (!el) return false;
+          el.focus();
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          return document.activeElement === el;
+        })()
+        """)
+        if not focused:
+            raise RuntimeError("Flow prompt editor could not receive focus")
+        self.cdp('Input.dispatchKeyEvent', {
+            'type': 'rawKeyDown', 'key': 'Control', 'code': 'ControlLeft',
+            'windowsVirtualKeyCode': 17, 'nativeVirtualKeyCode': 17, 'modifiers': 2,
+        })
+        self.cdp('Input.dispatchKeyEvent', {
+            'type': 'rawKeyDown', 'key': 'a', 'code': 'KeyA',
+            'windowsVirtualKeyCode': 65, 'nativeVirtualKeyCode': 65, 'modifiers': 2,
+        })
+        self.cdp('Input.dispatchKeyEvent', {
+            'type': 'keyUp', 'key': 'a', 'code': 'KeyA',
+            'windowsVirtualKeyCode': 65, 'nativeVirtualKeyCode': 65, 'modifiers': 2,
+        })
+        self.cdp('Input.dispatchKeyEvent', {
+            'type': 'keyUp', 'key': 'Control', 'code': 'ControlLeft',
+            'windowsVirtualKeyCode': 17, 'nativeVirtualKeyCode': 17,
+        })
+        self.cdp('Input.dispatchKeyEvent', {
+            'type': 'keyDown', 'key': 'Backspace', 'code': 'Backspace',
+            'windowsVirtualKeyCode': 8, 'nativeVirtualKeyCode': 8,
+        })
+        self.cdp('Input.dispatchKeyEvent', {
+            'type': 'keyUp', 'key': 'Backspace', 'code': 'Backspace',
+            'windowsVirtualKeyCode': 8, 'nativeVirtualKeyCode': 8,
+        })
+        self.cdp('Input.insertText', {'text': text})
         time.sleep(0.3)
 
     def download_video_by_url(self, vid_url, out_path):
