@@ -1,34 +1,31 @@
 # Current Status
 
 **Branch:** `fix/character-consistency`
-**Current working baseline:** `4e7e60b`
+**Exact Flow project:** `0bd8a011-4555-49c2-adc8-ba87b68466a9`
+**Exact Creator character:** `b068cab7-76d4-49ec-9066-9259c139d46a` (`Creator`)
 
-## Objective
+## Completed live checks
 
-Produce a 20–30 second Google Flow food-ASMR short in three 10-second clips, using a real reusable `Creator` asset and a verified `@Creator` entity chip in every prompt, plus clean 8–9 second continuation frames for Clips 2 and 3.
+- Connected to the authenticated Flow session via CDP port `9222`.
+- Opened and verified the user-created character at the exact project/character URL.
+- Entered the same project composer.
+- Typed `@Creator` using real CDP keystrokes, opened the Flow entity/media panel, and selected its `Creator` → `İsteme ekle` action.
+- Verified the composer contains a real Slate inline/void, `contenteditable=false` character entity node (`Male food content creator portrait`), not just plain `@Creator` text.
 
-## Current live verification
+## Generation result
 
-The current authenticated Flow session and project were inspected through CDP port `9222`.
+Clip 1 was submitted with the real Creator entity and the required chicken-tender deep-dip ASMR hook. Flow rejected the generation immediately with:
 
-- Live project ID: `01d7d238-5897-4495-bf29-3c43dea8ce9f`
-- Flow Characters page: loaded.
-- `Creator` visible in Characters page: **no**.
-- `Creator` present in authenticated `flow.projectInitialData`: **no**.
-- Literal `@Creator` entered in the generation editor: **yes**.
-- Real autocomplete/entity candidate appeared: **no**.
-- Verified token/chip could be inserted: **no**.
+> Başarısız — Olağan dışı etkinlikler tespit ettik. Daha fazla bilgi için lütfen Yardım Merkezi'ni ziyaret edin; üretme işlemi için kredi kullanmadınız.
 
-## Outcome
+No Clip 1 media was generated, therefore Clips 2–3, continuation frames, visual identity comparison, concat output, and drift assessment could not be performed. Ingredients/reference fallback was not used.
 
-The three-clip run was intentionally blocked before Clip 1. Without a real `@Creator` asset/chip in the current project, generation would violate the required identity-lock condition. No fallback Ingredients/reference attachment was used; no media was generated; no face-stability result can be asserted.
+## Exact remaining blocker
 
-## Required next action
+This is now an account/platform generation restriction in the authenticated Flow session. It is **not** a missing Creator asset, wrong project, failed `@Creator` autocomplete, or plain-text-chip problem.
 
-Use the authenticated Flow project that contains the manually created `Creator` character asset, or add/reuse that asset in project `01d7d238-5897-4495-bf29-3c43dea8ce9f`. Confirm that typing `@Creator` opens a selectable entity suggestion in the generation composer. Once this holds, rerun the pipeline to generate Clip 1, review/extract a clean 8–9s continuation frame, generate Clip 2, repeat for Clip 3, and visually reject any identity drift before concatenating.
+## Resume condition
 
-## Files
+Once the Flow account can generate again, rerun the exact project test: generate Clip 1; inspect and select a clean 8–9s frame; insert the verified Creator chip again for Clip 2; repeat for Clip 3; visually reject any face, hair, wardrobe, or scene drift before concatenation.
 
-- Detailed evidence and result matrix: `HERMES_TEST_REPORT.md`
-- Execution instructions: `HERMES_NEXT_ACTION.md`
-- Pipeline: `food_discovery_engine.py`
+Detailed live evidence and the complete result matrix are in `HERMES_TEST_REPORT.md`.
