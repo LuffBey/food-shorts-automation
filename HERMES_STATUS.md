@@ -74,6 +74,22 @@ The helper now explicitly declares ctypes signatures for `XTestFakeMotionEvent`,
 
 **Conclusion:** the previous browser-chrome coordinate error is eliminated. Even a verified XTEST click inside the live Generate rectangle caused no Flow state transition, unlike an actual human click through noVNC.
 
+## Generate browser event-chain comparison
+
+A temporary in-page logger observed the live Generate button, parents, and document during one human noVNC click and one corrected XTEST click. It was browser-only instrumentation; existing Creator/project/prompt preparation code remained unchanged. Raw captures are local only: `/tmp/flow_human_generate_events.json` and `/tmp/flow_xtest_generate_events.json`.
+
+| Aspect | Human noVNC | Corrected XTEST |
+|---|---|---|
+| Creator chip / prompt | Fresh real tokenized chip; same Clip 1 prompt | Fresh real tokenized chip; same Clip 1 prompt |
+| Core button chain | `pointerdown → mousedown → focus → pointerup → mouseup → click` | Same |
+| `isTrusted` | `true` | `true` |
+| Pointer type / button | `mouse`, button 0; buttons 1 at down | Same |
+| Arrival path | Multiple small pointer moves over ~0.8s | One synthetic arrival/move |
+| Flow result | Third video element appeared; authenticated media HEAD `200` / 3,448,172 bytes | Failed media card at 32%; no fourth playable video |
+| `Olağan dışı etkinlik` | No | No (a generic `Başarısız` card appeared instead) |
+
+**Finding:** the captured browser DOM activation sequence is materially equivalent and trusted in both cases. No missing `mousedown`, focus, `mouseup`, or `click` explains the different outcome. The remaining difference is outside the DOM logger—likely lower-level input provenance, browser/renderer handling, or Flow backend policy. No stealth/bypass was used. A human noVNC click is still the only confirmed reliable Generate trigger.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.

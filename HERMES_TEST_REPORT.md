@@ -203,6 +203,39 @@ Derived fresh browser chrome delta: `outerHeight - innerHeight = 121`. The conte
 
 The X11 target was corrected, the pointer was proven to map into the live Generate DOM rectangle, and one normal OS-level click was sent. Flow still did not transition, generate, or reject in the observation period. Thus this rules out the prior vertical browser-chrome coordinate error; it does not reproduce the successful actual human noVNC click.
 
+## Generate Browser Event-Chain Comparison (2026-09-03)
+
+### Instrumentation
+
+A temporary, in-page event logger was installed **only in the live browser page**; no existing Creator/project/prompt preparation code was changed. It observed capture and bubble listeners on the live Generate button, its two parents, and `document`, plus focus/blur and local mutation state. It recorded event type/order, `isTrusted`, coordinates, `button`, `buttons`, `pointerType`, `detail`, target, and active element. Raw captures were saved outside the repository at:
+
+- `/tmp/flow_human_generate_events.json`
+- `/tmp/flow_xtest_generate_events.json`
+
+Both runs began from a freshly prepared Clip 1 composer with the same real, Slate-tokenized `Creator` entity chip and unchanged 9:16 deep-dip prompt.
+
+### Human noVNC click
+
+The user made one ordinary mouse click through noVNC. The logger recorded a trusted mouse chain on the actual Generate button. It included multiple natural hover movements before press, then:
+
+`pointerdown → mousedown → focus → pointerup → mouseup → click`
+
+All recorded UI events had `isTrusted: true`, `pointerType: "mouse"` on PointerEvents, button `0`, `buttons: 1` at down and `0` at up/click. The physical click landed near viewport `(801,603)` / screen `(811,734)`. Flow created a third video element (`name=09a2d6bb-e2ed-4d60-9e66-229b379b22ef`); a page-authenticated HEAD request returned `200` and `content-length: 3448172`.
+
+### Corrected XTEST click
+
+The XTEST helper used the corrected fresh web-content target `(811,733)`, mapped back to viewport `(801,602)` inside the live Generate rectangle. It produced this trusted chain on the actual button:
+
+`pointerover → pointerenter → mouseover → mouseenter → pointermove → mousemove → pointerdown → mousedown → focus → pointerup → mouseup → click`
+
+The core down/up/click data was also `isTrusted: true`, `pointerType: "mouse"`, button `0`, with `buttons: 1` at pointerdown and `0` at pointerup/click. Unlike the manual path, it had one synthetic arrival/move rather than a sequence of small human pointer moves over roughly 0.8 seconds. After that single click Flow displayed a failed generated-media card (`Başarısız`, visible 32% progress card) and did not create a fourth playable video. It did **not** display the earlier `Olağan dışı etkinlik` wording.
+
+### Evidence-based conclusion
+
+At the **browser DOM event level**, the decisive button activation sequence is materially the same in both cases and is trusted in both cases. The demonstrated DOM-level differences are the natural multi-move/noVNC approach path and slightly different coordinates/timing, not a missing `mousedown`, `focus`, `mouseup`, or `click` event in XTEST.
+
+The differing Flow outcome therefore cannot be explained by the captured Generate-button DOM sequence alone. The most plausible remaining distinction is outside this logger's scope—e.g. lower-level input provenance, browser/renderer handling, or Flow backend anti-automation/generation policy. No stealth or bypass was attempted. Human-in-the-loop Generate remains the only confirmed reliable trigger for this session.
+
 ## Exact blocker and next action
 
 The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.
