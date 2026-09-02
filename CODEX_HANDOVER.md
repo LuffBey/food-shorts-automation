@@ -55,7 +55,61 @@ Codex'in aşağıdaki iki çözüm yolundan birini veya hibritini hayata geçirm
 
 ---
 
-## 📂 5. Önemli Dosya Yolları
+## 5. Codex'e Güncel Canlı Test Raporu (2026-09-03)
+
+### Doğrulanan canlı ortam
+
+- **Branch:** `fix/character-consistency`
+- **Doğrulanan Flow projesi:** `0bd8a011-4555-49c2-adc8-ba87b68466a9`
+- **Doğrulanan karakter:** `Creator`
+- **Character ID:** `b068cab7-76d4-49ec-9066-9259c139d46a`
+- **Erişim:** CDP port `9222`; gerektiğinde görünür Chromium + noVNC ile kullanıcı manuel kontrolü mümkündür.
+
+### `@Creator` gerçek chip doğrulaması
+
+Bu mekanizma artık yalnızca teorik değil, canlı Flow DOM'unda doğrulandı:
+
+1. Composer'a gerçek CDP klavye olaylarıyla `@Creator` yazıldı.
+2. Flow'un entity/media seçicisi açıldı ve doğru `Creator` karakter kartı bulundu.
+3. `İsteme ekle` seçildi.
+4. Slate editörde düz metin yerine şu özellikleri taşıyan gerçek entity node oluştu:
+   - `data-slate-inline="true"`
+   - `data-slate-void="true"`
+   - `contenteditable="false"`
+   - etiket: `Male food content creator portrait`
+
+**Kural:** Düz `@Creator` metni kimlik kilidi sayılmayacak; yukarıdaki token/chip DOM doğrulaması olmadan üretim başlatılmayacak.
+
+### Clip 1 manuel üretim sonucu
+
+Önceki CDP tıklamasında görünen "olağan dışı etkinlik" engelinin otomasyon/etkileşim kaynaklı olduğu test edildi. Aynı hazır prompt ve gerçek `Creator` chip ile kullanıcı görünür Chromium'da **Oluştur** düğmesine manuel bastı ve Flow videoyu başarıyla üretti.
+
+- Oluşan doğru dikey sonuç: **720×1280, 9:16, 24 fps, 10.005 sn**
+- İndirilen yerel test dosyası (git dışında): `clip_1_creator_deep_dip.mp4`
+- İçerik: Creator'ın çıtır tavuk parçasını sosa daldırdığı hook testi.
+- Görsel inceleme: aynı erkek yüzü, kısa koyu saç/sakal, siyah tişört ve sıcak mutfak/food sahnesi klip boyunca tutarlı.
+- 5. saniyede dramatik macro yakın plan bulundu; **continuation frame için uygun değil**.
+- 8–9 saniye aralığı tekrar orta plana dönüyor; **9. saniye karesi** temiz continuation adayı olarak çıkarıldı: `clip_1_continuation_9s.jpg` (git dışında).
+
+### Önemli teşhis
+
+- `Creator` asset erişimi: **çalışıyor**.
+- Gerçek `@Creator` chip ekleme: **çalışıyor**.
+- Flow video üretimi: **manuel UI tıklamasıyla çalışıyor**.
+- CDP üzerinden doğrudan Generate tıklamasında oluşan "unusual activity" reddi, platformun otomasyon algılama davranışıdır; karakter/prompt/video-model arızası değildir.
+
+### Codex için sonraki uygulama yönü
+
+1. Chip hazırlama, DOM doğrulama, prompt kurma, indirme ve frame extraction otomatik kalabilir.
+2. Generate tetikleme yolunu anti-bot reddini azaltacak şekilde gerçek kullanıcı etkileşimine yaklaştırın; bu mümkün değilse human-in-the-loop modunda görünür Chromium/noVNC üzerinde kullanıcıya yalnızca **Oluştur** tıklaması bırakın.
+3. Clip 2 ve 3 için her seferinde gerçek `Creator` chip ekleyin; düz metni kabul etmeyin.
+4. Clip 2 Start Frame olarak `clip_1_continuation_9s.jpg` kullanılmalı; sonra Clip 2'nin temiz 8–9 sn karesi Clip 3'e aktarılmalı.
+5. Her üretim sonrası indirilen videoyu ve seçilen continuation frame'i görsel olarak kontrol edin. Kimlik, saç/sakal, siyah tişört veya sahne kayarsa klibi reddedip yeniden üretin.
+6. Üretilen video/frame/reference dosyalarını repoya commit etmeyin. Sadece kod ve Markdown raporları pushlanabilir.
+
+---
+
+## 6. Önemli Dosya Yolları ve Çalışma Ağacı
 
 - **Ana Motor Kodu:** `/root/hermes-projects/food-discovery-automation/food_discovery_engine.py`
 - **Karakter Referans Görseli:** `/root/hermes-projects/food-discovery-automation/creator_face_ref.jpg`

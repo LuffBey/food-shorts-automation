@@ -20,9 +20,22 @@ Clip 1 was submitted with the real Creator entity and the required chicken-tende
 
 No Clip 1 media was generated, therefore Clips 2–3, continuation frames, visual identity comparison, concat output, and drift assessment could not be performed. Ingredients/reference fallback was not used.
 
-## Exact remaining blocker
+## Manuel UI Başarı Güncellemesi (2026-09-03)
 
-This is now an account/platform generation restriction in the authenticated Flow session. It is **not** a missing Creator asset, wrong project, failed `@Creator` autocomplete, or plain-text-chip problem.
+Önceki otomatik Generate denemesi Flow tarafından "olağan dışı etkinlik" olarak reddedilmişti. Aynı exact proje, gerçek `Creator` chip'i ve aynı prompt ile görünür Chromium/noVNC üzerinden kullanıcı manuel **Oluştur** tıklaması yaptıktan sonra video başarıyla üretildi.
+
+- Doğrulanan Flow projesi: `0bd8a011-4555-49c2-adc8-ba87b68466a9`
+- Doğrulanan gerçek karakter entity: `Creator` (`b068cab7-76d4-49ec-9066-9259c139d46a`)
+- Gerçek Slate chip: `data-slate-inline=true`, `data-slate-void=true`, `contenteditable=false`
+- Klip 1 çıktısı: 720×1280, 9:16, 24 fps, 10.005 sn
+- Tutarlılık gözlemi: yüz, kısa koyu saç/sakal, siyah tişört ve sıcak food sahnesi test klibinde tutarlı.
+- Clip 2/3 üretimi bu yatay/dikey ve manuel tetikleme testinden sonra kullanıcı isteğiyle durduruldu; tam 3 kliplik üretim henüz tamamlanmadı.
+
+Detaylı Codex handover notu: `CODEX_HANDOVER.md`; canlı test kanıtı: `HERMES_TEST_REPORT.md`.
+
+## Otomasyon için kalan mesele
+
+`Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.
 
 ## Resume condition
 

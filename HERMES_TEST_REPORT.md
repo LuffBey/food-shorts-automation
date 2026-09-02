@@ -77,6 +77,20 @@ No video element, generated media URL, or downloadable Clip 1 appeared. This is 
 | Ingredients fallback used | **No** |
 | Final output path | **None** |
 
+## Manual UI generation validation (2026-09-03)
+
+The prior direct-CDP Generate attempt was rejected with Flow's "unusual activity" message. The same exact project, verified real `Creator` entity chip, and prepared Clip 1 prompt were then submitted by the user through the visible Chromium/noVNC Flow UI. Flow generated the video successfully.
+
+- Generated test clip: **720×1280 (9:16), 24 fps, 10.005 seconds**.
+- Local non-versioned test download: `clip_1_creator_deep_dip.mp4`.
+- Visual review: the creator's face, short dark hair/stubble, plain black crew-neck shirt, and warm food scene stayed consistent within the test clip.
+- The dramatic 5s macro close-up is unsuitable as a chain frame; the 9s medium-shot frame was extracted as `clip_1_continuation_9s.jpg` for potential Clip 2 chaining.
+- The user stopped the run after this manual trigger/orientation test. Clips 2 and 3 were **not** generated, and the 3×10s final concat/identity comparison is therefore still incomplete.
+
+This changes the diagnosis: `Creator` asset access, real chip insertion, prompt setup, and Flow video generation are all working. The remaining automation issue is specifically the direct CDP Generate interaction; a human-in-the-loop visible UI click is a functional fallback.
+
 ## Exact blocker and next action
 
-The identity-lock precondition is now proven in the exact user-created Flow project: the `Creator` asset is accessible and the real tokenized entity chip can be inserted. The sole blocker is Flow's visible **unusual activity** generation refusal. Resolve that restriction in the authenticated Google Flow account/session, then rerun Clip 1 and continue with clean 8–9 second continuation frames for Clips 2 and 3. No fallback was used and no generated media, screenshots, reference images, cookies, or secrets are committed.
+The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.
+
+To complete the production test, retain the automated preparation, download, frame extraction, and visual QA; require one visible human **Oluştur** click per clip. Generate Clip 2 with the selected 9s Clip 1 continuation frame, inspect it, then generate Clip 3 with a clean 8–9s Clip 2 frame. No generated media, screenshots, reference images, cookies, or secrets are committed.
