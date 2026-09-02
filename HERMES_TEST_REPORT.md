@@ -2,67 +2,60 @@
 
 **Date:** 2026-09-03
 **Branch:** `fix/character-consistency`
-**Commit under test:** pending commit for this implementation
+**Base commit under test:** `4e7e60b` (`docs: run pipeline bootstrapped Creator asset`)
 
-## Scope
+## Requested test
 
-Implemented and smoke-tested the Character Asset-first architecture for the Food Discovery three-clip (3 × 10 second) ASMR Flow pipeline. The target concept is crispy fried chicken tenders with glossy dipping sauce.
+Run a real 3 × 10-second Google Flow food-ASMR sequence using a reusable `Creator` character asset and a verified, real `@Creator` entity chip in every clip:
 
-## Code changes
+1. crispy chicken tender hook and deep dip;
+2. same creator, continuation frame, bite/texture reaction;
+3. same creator, continuation frame, glaze/final bite/subtle approval.
 
-- Replaced `food_discovery_engine.py` with a maintainable CDP implementation.
-- Added `CharacterAssetManager` that opens Flow Characters, searches for a reusable `Creator` asset, reuses it if found, and otherwise attempts character creation using up to two local reference images.
-- Added a reactive upload path: `DOM.setFileInputFiles`, followed by bubbling `input`, `change`, `dragenter`, `dragover`, and `drop` events.
-- Added verified `@Creator` insertion: it opens autocomplete, selects a visible Creator candidate, and requires a non-plain-text token/chip node. It does **not** silently claim identity lock when only literal text exists.
-- Added all three persistent locks to every clip prompt: identity, scene, and negative constraints.
-- Added per-clip failure stopping, start-frame attachment checks, and `8s`/`9s` continuation-frame extraction so a failed clip cannot be propagated into the chain.
-- Preserved CDP Flow connection, browser-side video download, FFmpeg continuity-frame extraction, normalization, and concat output path conventions.
+No Ingredients/reference fallback was permitted for this run because the requested primary mechanism was the real `@Creator` chip.
 
-## Live Flow evidence
+## Live Flow session evidence
 
-A real authenticated Flow project was connected through Chromium CDP port 9222:
+- Connected to the authenticated Chromium CDP session on port `9222`.
+- Current live project: `01d7d238-5897-4495-bf29-3c43dea8ce9f`.
+- Project generation view and Characters view both loaded successfully after a browser reload.
+- The Characters view showed the new-character form (`Yeni karakter`) but no visible `Creator` asset.
+- Project initial data was fetched from Flow's authenticated `flow.projectInitialData` endpoint. Its serialized response contained no project character named `Creator`.
 
-`https://labs.google/fx/tr/tools/flow/project/01d7d238-5897-4495-bf29-3c43dea8ce9f/characters`
+## Real `@Creator` chip verification
 
-Character Asset creation was attempted in the live **Yeni karakter** screen using:
+On the live project generation editor:
 
-`/root/hermes-projects/food-discovery-automation/creator_face_ref.jpg`
+- Literal `@Creator` text was entered into the real Flow prompt editor.
+- No autocomplete/menu/entity candidate named `Creator` appeared after waiting for UI update.
+- Therefore no selectable real entity chip existed and the editor could not be verified as containing a tokenized `@Creator` chip.
+- Literal text was deliberately **not** treated as identity lock.
 
-### Character Asset creation
+## Result matrix
 
-**Result: not successful.**
+| Requirement | Result |
+|---|---|
+| `Creator` asset detected in current live project | **No** |
+| Real `@Creator` chip inserted — Clip 1 | **No** |
+| Real `@Creator` chip inserted — Clip 2 | **No** |
+| Real `@Creator` chip inserted — Clip 3 | **No** |
+| Clip 1 generated | **No** |
+| Clip 2 generated | **No** |
+| Clip 3 generated | **No** |
+| Clip 1 → 2 same identity | **Uncertain / not evaluable** |
+| Clip 2 → 3 same identity | **Uncertain / not evaluable** |
+| Face, hairstyle, wardrobe, or scene drift | **Not evaluable: no new clips** |
+| Clip regenerated due to identity failure | **No: generation never began** |
+| Ingredients fallback used | **No** |
+| Final output path | **None** |
 
-- CDP attachment did assign the file: `input.files = ['creator_face_ref.jpg']`.
-- The Flow application did not render a visible attachment name or preview after the reactive event dispatch.
-- The manager therefore returned `blocked-upload-not-ingested` rather than submitting a character generation with unverified input.
-- No reusable `Creator` asset was found in the project during the check.
+## Exact blocker
 
-### `@Creator` chip insertion
+The manually created `Creator` asset is not available in the current authenticated Flow project (`01d7d238-5897-4495-bf29-3c43dea8ce9f`). Live DOM and authenticated project data both lack it, and Flow offers no `Creator` autocomplete candidate. This is a project/session scope mismatch rather than a plain-text insertion issue.
 
-**Result: not successful / not attempted past asset gate.**
+The automation correctly stopped before any video generation to avoid falsely claiming an identity lock. To run the requested 3×10s test, open the Flow project where the manually created asset is actually present, or create/reuse `Creator` in the current project and then rerun.
 
-Because no reusable `Creator` asset existed and Flow did not ingest the creation upload, there was no valid autocomplete candidate to select. The implementation intentionally fails the chip verification rather than treating plain `@Creator` text as a character token.
+## Code verification
 
-### Three-clip production test
-
-**Result: not run to generation.**
-
-The workflow was stopped before Clip 1 because the required primary identity-lock asset could not be created or reused. No generated videos, screenshots, extracted frames, cache, secrets, or temporary media were committed.
-
-### Face stability
-
-**Result: not evaluable.**
-
-No new three-clip sequence was produced in this run, so Clip 1→2 and Clip 2→3 face stability cannot be truthfully asserted.
-
-## Verification performed
-
-- `python3 -m py_compile food_discovery_engine.py` — passed.
-- Live CDP connection to authenticated Google Flow Characters page — passed.
-- Live attachment-state inspection (`input.files`) — passed at browser DOM level.
-- Live Flow application ingestion / preview verification — failed, correctly blocking creation.
-- Prompt and continuation-frame structural smoke test — passed.
-
-## Exact diagnosis
-
-The remaining blocker is Flow application-level ingestion of the reference image in the Character creation UI. CDP has set the native file input, but Flow has not accepted it into its React/application state. This is distinct from a missing authentication or missing file-input issue.
+- `python3 -m py_compile food_discovery_engine.py` passed before live verification.
+- No generated videos, frames, screenshots, references, cookies, or secrets were staged or committed.
