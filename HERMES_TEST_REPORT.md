@@ -291,6 +291,55 @@ The DOM's video-element count changed because Flow added a failed media-card/vid
 
 Using the same VNC server/input pipeline as noVNC did not reproduce the manual success. The browser-level event chain for the RFB test was trusted and complete, but Flow returned the same kind of generic failed card seen with programmatic XTEST. The remaining observed distinction is the actual remote user's noVNC/browser interaction path and its natural pointer timing/trajectory, or lower-level/remote-input provenance or backend policy outside the captured DOM chain. This test does not establish a security bypass and none was attempted.
 
+## Keyboard Accessibility Activation Test (2026-09-03)
+
+**Base requested commit:** `bee55e0e6b0f640653e0b0aea01e16bac978afee` (`docs: test standard keyboard activation Flow Generate`). The branch was reset to that exact commit before this test.
+
+### Scope and safeguards
+
+Only normal visible keyboard navigation was used to activate Generate. This test used **no mouse**, CDP click, DOM click, XTEST mouse/pointer event, VNC/RFB pointer event, stealth/fingerprint spoofing, proxy/VPN change, CAPTCHA/security bypass, retry loop, main/PR merge, or media commit.
+
+The same Clip 1 prompt was freshly prepared in exact project `0bd8a011-4555-49c2-adc8-ba87b68466a9` with a real `Creator` chip. The chip was DOM-verified as a Slate inline/void `contenteditable=false` entity before navigation.
+
+### Tab focus evidence
+
+Visible keyboard focus began in the prompt composer. Standard visible **Tab** presses were sent one at a time and checked after each step:
+
+1. `add_2 / Oluştur` control;
+2. `Ajan`;
+3. `Video 720p 10s`;
+4. `arrow_forward / Oluştur` Generate button.
+
+At Tab step 4, `document.activeElement` was the live Generate `<button>` exactly. The button was enabled (`disabled=false`, `aria-disabled=false`). The keyboard logger was cleared only after this focus proof, then one **Enter** keydown/keyup was sent. Space was not additionally sent because that would be a second activation attempt.
+
+### Captured trusted keyboard event chain
+
+On the focused Generate button, the logger recorded:
+
+`keydown(Enter) → keypress(Enter) → click → keyup(Enter)`
+
+| Event | `isTrusted` | Key/code | Other evidence |
+|---|---|---|---|
+| `keydown` | true | `Enter` / `Enter` | focus target was Generate button |
+| `keypress` | true | `Enter` / `Enter` | `repeat=false` |
+| `click` | true | n/a | `button=0`, `buttons=0`, `detail=0` |
+| `keyup` | true | `Enter` / `Enter` | `repeat=false` |
+
+Thus keyboard accessibility activation did produce a real trusted browser `click` event from a Tab-focused button.
+
+### Flow outcome (up to 120 seconds; terminal failure was immediate)
+
+- Generation started/progress card: **no positive progress state observed**.
+- `Olağan dışı etkinlik`: **no**.
+- Generic `Başarısız`: **yes**, visible immediately.
+- Video element count: Flow added another generated-media shell, increasing the count to 5; it was accompanied by the generic failure card and is **not** considered a playable new video.
+- New playable video / resolution / FPS / duration: **none / N/A**.
+- Clip 2/3: **not attempted**.
+
+### Conclusion
+
+Keyboard activation is structurally correct at the browser level: Tab focus reached the actual button, trusted Enter keydown/keyup occurred, and Chromium synthesized a trusted click. Flow nevertheless returned the same generic failed-media outcome as programmatic pointer routes. In this session, a real human noVNC mouse click remains the only confirmed route that has produced a playable Clip 1 video.
+
 ## Exact blocker and next action
 
 The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.

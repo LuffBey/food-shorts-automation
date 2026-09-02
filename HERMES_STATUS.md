@@ -108,6 +108,24 @@ A direct shared **RFB 3.8** session to `127.0.0.1:5900` was used—the same runn
 
 **Conclusion:** simply using the same VNC server/input pipeline is insufficient to reproduce a human noVNC success. At DOM level, all paths produce trusted and complete activation sequences. The remaining difference is outside the logged DOM chain—likely actual noVNC/browser remote-user interaction behavior, input provenance/timing, or Flow backend policy. No bypass was attempted.
 
+## Keyboard accessibility activation test
+
+The branch was reset to requested base `bee55e0e6b0f640653e0b0aea01e16bac978afee` before this test. The exact project and fresh real tokenized `Creator` chip were prepared with the unchanged Clip 1 prompt. No mouse, CDP/DOM click, XTEST mouse/pointer event, VNC/RFB pointer event, stealth/fingerprint spoofing, proxy/VPN, CAPTCHA/security bypass, retry loop, merge, or media commit was used.
+
+Visible Tab navigation reached Generate in four verified focus steps: `add_2/Oluştur` → `Ajan` → `Video 720p 10s` → `arrow_forward/Oluştur`. At step 4, `document.activeElement === Generate button`; it was enabled. After clearing the logger, one normal visible **Enter** keydown/keyup was sent (Space was not also sent, avoiding a second activation).
+
+Captured on the actual focused Generate button:
+
+```text
+keydown(Enter) → keypress(Enter) → click → keyup(Enter)
+```
+
+Every event had `isTrusted=true`; Enter had `repeat=false`, and Chromium synthesized the click with `button=0`, `buttons=0`, `detail=0`.
+
+**Flow result:** generic `Başarısız` was immediate; no `Olağan dışı etkinlik`, no positive progress state, and no playable new video. Flow added a failed media shell (element count rose to 5), so no resolution/FPS/duration exists. Clip 2/3 were not attempted.
+
+**Conclusion:** Tab focus and keyboard accessibility activation are browser-correct and trusted, but Flow returns the same generic failure behavior as programmatic pointer routes. Human noVNC mouse click remains the only confirmed playable-generation path in this session.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.
