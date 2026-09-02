@@ -126,6 +126,25 @@ Every event had `isTrusted=true`; Enter had `repeat=false`, and Chromium synthes
 
 **Conclusion:** Tab focus and keyboard accessibility activation are browser-correct and trusted, but Flow returns the same generic failure behavior as programmatic pointer routes. Human noVNC mouse click remains the only confirmed playable-generation path in this session.
 
+## Prompt-editor Enter submit test
+
+The requested single Enter-only test was run in exact project `0bd8a011-4555-49c2-adc8-ba87b68466a9`. A simple Clip 1 prompt was placed in the actual visible Slate editor; this isolation test intentionally used no `Creator` chip. The editor itself was the active `contenteditable=true` element and held one prompt paragraph before activation.
+
+No CDP/DOM click, XTEST mouse/pointer event, VNC PointerEvent, Tab navigation, Generate focus/click, stealth/fingerprint, proxy/VPN, or second activation was used.
+
+One normal visible Enter keydown/keyup produced only trusted keyboard propagation:
+
+```text
+keydown(Enter, isTrusted=true, repeat=false)
+keyup(Enter, isTrusted=true, repeat=false)
+```
+
+There was no editor `keypress`, `beforeinput`, `input`, click, or submit event. The prompt did **not** gain a newline. Flow cleared the composer to its empty placeholder while the editor remained focused.
+
+For the full 120-second observation, no positive generation/progress, `Olağan dışı etkinlik`, or new playable video appeared. A generic `Başarısız` card initially visible was pre-existing from the prior keyboard-Generate test and cleared by 20 seconds; no new failure was attributed to editor Enter. The video-element count changed from 6 to 7, but final inspection found only four already playable 720×1280 / 10.005s outputs and non-ready historical shells—no new ready/playable output from this action. Clips 2/3 were not attempted.
+
+**Conclusion:** prompt-editor Enter does not directly submit Flow generation; it neither added a newline nor produced a browser-level submit/click event in the captured listeners. The test stopped without a second activation.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.

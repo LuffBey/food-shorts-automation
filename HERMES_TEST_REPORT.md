@@ -340,6 +340,48 @@ Thus keyboard accessibility activation did produce a real trusted browser `click
 
 Keyboard activation is structurally correct at the browser level: Tab focus reached the actual button, trusted Enter keydown/keyup occurred, and Chromium synthesized a trusted click. Flow nevertheless returned the same generic failed-media outcome as programmatic pointer routes. In this session, a real human noVNC mouse click remains the only confirmed route that has produced a playable Clip 1 video.
 
+## Prompt-Editor Enter Submit Test (2026-09-03)
+
+### Scope
+
+This was the requested single test of **one normal Enter key** while the Flow prompt editor—not Generate—was focused. Exact project: `0bd8a011-4555-49c2-adc8-ba87b68466a9`. A simple Clip 1 deep-dip prompt was inserted into the actual visible Slate editor; no `Creator` chip was used for this editor-submit isolation test.
+
+No CDP click, `DOM.click()`, XTEST mouse/pointer event, VNC PointerEvent, Tab focus navigation, Generate-button activation, stealth/fingerprint change, proxy/VPN change, or second activation was used.
+
+### Pre-Enter proof
+
+- `document.activeElement` was the visible `contenteditable=true` prompt editor.
+- The editor held one Slate paragraph containing the full simple Clip 1 prompt.
+- A temporary browser-only logger observed `keydown`, `keypress`, `keyup`, `beforeinput`, `input`, focus/blur, click, and submit on the editor and document.
+
+### Enter event result
+
+One normal visible X11 Enter keydown/keyup was sent. The logger recorded only trusted keyboard propagation:
+
+- `keydown`, `key="Enter"`, `code="Enter"`, `isTrusted=true`, `repeat=false`;
+- `keyup`, `key="Enter"`, `code="Enter"`, `isTrusted=true`, `repeat=false`.
+
+There was **no** editor `keypress`, `beforeinput`, `input`, click, or submit event. The original one-paragraph prompt did not gain a new line; instead Flow cleared the composer to its empty placeholder (`Ne oluşturmak istiyorsunuz?`) while retaining editor focus. This indicates Enter did **not** insert a newline and did **not** directly create a browser-level submit/click event in the captured page listeners.
+
+### 120-second observation
+
+No additional activation was attempted. Over the complete 120-second observation:
+
+| Signal | Result |
+|---|---|
+| Generate/Oluştur started / positive progress | No |
+| `Olağan dışı etkinlik` | No |
+| Generic `Başarısız` | Present initially from the pre-existing prior failed card; it cleared by 20s and no new failure card attributable to this Enter appeared |
+| New playable video | No |
+| New playable resolution / FPS / duration | N/A |
+| Clip 2 / Clip 3 | Not attempted |
+
+The page's video-element count changed from 6 to 7 during observation, but this was not accepted as a result: final inspection identified four existing playable 720×1280 / 10.005s videos and three non-ready historical media shells, with no new ready/playable video attributable to the editor Enter action. No new generated-output metadata, positive progress card, or Flow submission state appeared.
+
+### Conclusion
+
+**Prompt-editor Enter did not directly submit generation.** It did not make a new line either; Flow cleared the editor while keeping it focused. The test therefore stops here exactly as requested, with no second activation attempt.
+
 ## Exact blocker and next action
 
 The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.
