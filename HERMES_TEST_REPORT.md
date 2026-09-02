@@ -236,6 +236,61 @@ At the **browser DOM event level**, the decisive button activation sequence is m
 
 The differing Flow outcome therefore cannot be explained by the captured Generate-button DOM sequence alone. The most plausible remaining distinction is outside this logger's scope—e.g. lower-level input provenance, browser/renderer handling, or Flow backend anti-automation/generation policy. No stealth or bypass was attempted. Human-in-the-loop Generate remains the only confirmed reliable trigger for this session.
 
+## Programmatic VNC/RFB PointerEvent Test (2026-09-03)
+
+### Channel and constraints
+
+This test used a direct, ordinary **RFB 3.8** shared session to the already-running local `x11vnc` server on `127.0.0.1:5900`. That server is the same VNC server behind the existing noVNC path (`browser → websockify:6080 → x11vnc:5900 → X11 :99`). It did not use CDP mouse input, DOM events, XTEST, stealth/fingerprint changes, proxy/VPN changes, CAPTCHA handling, or retries.
+
+A small transparent helper, `vnc_rfb_pointer_event.py`, performed standard RFB negotiation with the server's offered `None` authentication and sent exactly this one sequence through the shared VNC session:
+
+1. `PointerEvent(811, 733, buttonMask=0)` — MOVE;
+2. wait 120ms;
+3. `PointerEvent(811, 733, buttonMask=1)` — left down;
+4. wait 120ms;
+5. `PointerEvent(811, 733, buttonMask=0)` — left up.
+
+The server reported framebuffer `1280×800`, display name `vmi3538471:99`; the dynamic target was inside that framebuffer. The target was recalculated immediately before the run from the live browser/window metrics, not hard-coded: Generate viewport rect `(785,586,32,32)`, `screen=(10,10)`, `outer=1050×780`, `inner=1050×659`, DPR `1`, leading to root/framebuffer target `(811,733)`.
+
+### Browser event evidence
+
+The same temporary in-page logger remained active. The RFB path reached the real Generate button and recorded this trusted button-bubble sequence:
+
+`pointerover → pointerenter → mouseover → mouseenter → pointermove → mousemove → pointerdown → mousedown → focus → pointerup → mouseup → click`
+
+- `isTrusted`: `true` for all captured browser events.
+- Pointer events: `pointerType="mouse"`.
+- Button: `0`; `buttons=1` at down and `buttons=0` at up/click.
+- Captured coordinates mapped to the live button target.
+- Raw local-only capture: `/tmp/flow_rfb_generate_events.json`.
+
+### Flow result (observed for 120 seconds; terminal state was immediate)
+
+Flow immediately rendered a generated-media failure card:
+
+- visible status: **`Başarısız`**;
+- visible card progress when observed: **10%**;
+- no `Olağan dışı etkinlik` wording;
+- no new playable video was produced;
+- Clip 2 and Clip 3 were not attempted.
+
+The DOM's video-element count changed because Flow added a failed media-card/video-shell element; it was not treated as a playable output. The report therefore records no new playable video, resolution, FPS, or duration.
+
+### Comparison: human noVNC, XTEST, and programmatic VNC/RFB
+
+| Property | Human noVNC | Programmatic XTEST | Programmatic VNC/RFB |
+|---|---|---|---|
+| Display/input route | browser noVNC → websockify → x11vnc → X11 | direct XTEST → X11 | direct RFB → **same x11vnc** → X11 |
+| Core DOM activation | down → mousedown → focus → up → mouseup → click | same | same |
+| DOM `isTrusted` | true | true | true |
+| Approach motion | several small natural moves | one synthetic move | one RFB MOVE event |
+| Flow outcome | playable generated video | failed card / no playable output | failed card / no playable output |
+| `Olağan dışı etkinlik` | no | no (generic failure) | no (generic failure) |
+
+### Evidence-based conclusion
+
+Using the same VNC server/input pipeline as noVNC did not reproduce the manual success. The browser-level event chain for the RFB test was trusted and complete, but Flow returned the same kind of generic failed card seen with programmatic XTEST. The remaining observed distinction is the actual remote user's noVNC/browser interaction path and its natural pointer timing/trajectory, or lower-level/remote-input provenance or backend policy outside the captured DOM chain. This test does not establish a security bypass and none was attempted.
+
 ## Exact blocker and next action
 
 The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.

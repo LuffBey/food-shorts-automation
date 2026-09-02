@@ -90,6 +90,24 @@ A temporary in-page logger observed the live Generate button, parents, and docum
 
 **Finding:** the captured browser DOM activation sequence is materially equivalent and trusted in both cases. No missing `mousedown`, focus, `mouseup`, or `click` explains the different outcome. The remaining difference is outside the DOM logger—likely lower-level input provenance, browser/renderer handling, or Flow backend policy. No stealth/bypass was used. A human noVNC click is still the only confirmed reliable Generate trigger.
 
+## Programmatic VNC/RFB PointerEvent test
+
+A direct shared **RFB 3.8** session to `127.0.0.1:5900` was used—the same running `x11vnc` server behind noVNC's `websockify:6080 → x11vnc:5900 → X11 :99` path. The helper `vnc_rfb_pointer_event.py` used standard RFB `None` authentication and exactly one sequence: `MOVE buttonMask=0` at dynamically calculated `(811,733)`, 120ms wait, left-down `buttonMask=1`, 120ms wait, left-up `buttonMask=0`.
+
+- No CDP mouse/DOM event, XTEST, stealth/fingerprint, proxy/VPN, CAPTCHA handling, or retry was used.
+- Fresh Creator chip and unchanged Clip 1 prompt were prepared first.
+- Browser logger recorded a complete trusted chain: `pointerover → pointerenter → mouseover → mouseenter → pointermove → mousemove → pointerdown → mousedown → focus → pointerup → mouseup → click`.
+- All captured events had `isTrusted=true`; PointerEvents had `pointerType="mouse"`; button 0 and correct `buttons` down/up state.
+- Flow immediately created a generic failed media card: visible `Başarısız`, observed 10% card progress. No `Olağan dışı etkinlik`; no new playable video; Clips 2/3 not attempted.
+
+| Route | Result |
+|---|---|
+| Human noVNC (`browser → websockify → x11vnc → X11`) | Playable video generated |
+| Programmatic XTEST → X11 | Generic failed card / no playable video |
+| Programmatic RFB → **same x11vnc** → X11 | Generic failed card / no playable video |
+
+**Conclusion:** simply using the same VNC server/input pipeline is insufficient to reproduce a human noVNC success. At DOM level, all paths produce trusted and complete activation sequences. The remaining difference is outside the logged DOM chain—likely actual noVNC/browser remote-user interaction behavior, input provenance/timing, or Flow backend policy. No bypass was attempted.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.
