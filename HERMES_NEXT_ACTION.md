@@ -1,90 +1,84 @@
-# Hermes — Next Action: Use the User-Created Creator Asset
+# Hermes — Next Action: Generate via Standard Keyboard UI Activation
 
 Branch: `fix/character-consistency`
 
 ## Exact Flow target
 
-The user manually created the reusable character asset in this exact Flow project:
-
 - Project ID: `0bd8a011-4555-49c2-adc8-ba87b68466a9`
 - Character ID: `b068cab7-76d4-49ec-9066-9259c139d46a`
 - Character name: `Creator`
-- Character URL: `https://labs.google/fx/tr/tools/flow/project/0bd8a011-4555-49c2-adc8-ba87b68466a9/character/b068cab7-76d4-49ec-9066-9259c139d46a`
 
-Do NOT use the old project `01d7d238-5897-4495-bf29-3c43dea8ce9f` for this test.
+## Current proven state
+
+- Exact project and `Creator` asset work.
+- Real tokenized `@Creator` chip works.
+- Human noVNC click on **Oluştur** generates successfully.
+- Direct CDP Generate activation was rejected as unusual activity.
+- Programmatic XTEST and direct RFB pointer activation produced trusted DOM click chains but failed to produce a playable output.
+
+Do not keep changing mouse paths. The next diagnostic is the standard keyboard-accessibility activation path.
 
 ## Goal
 
-Open the exact project above in the authenticated remote Chromium session, verify the existing `Creator` asset, insert a real `@Creator` entity chip, then run the 3x10s identity-stable food-ASMR pipeline.
+Prepare one normal Clip 1 request exactly as before, then activate the focused visible **Oluştur** control with ordinary OS/VNC keyboard events rather than mouse events or DOM/CDP activation.
+
+This is a normal UI/accessibility interaction test. Do not attempt stealth, fingerprint spoofing, proxy/VPN changes, CAPTCHA handling, timing randomization, or any security-control bypass.
 
 ## Required procedure
 
 1. Pull the latest `fix/character-consistency` branch.
-2. Connect to the existing authenticated Chromium session on CDP port 9222.
-3. Navigate the remote browser to:
-   `https://labs.google/fx/tr/tools/flow/project/0bd8a011-4555-49c2-adc8-ba87b68466a9/character/b068cab7-76d4-49ec-9066-9259c139d46a`
-4. Verify that the active project ID is exactly `0bd8a011-4555-49c2-adc8-ba87b68466a9`.
-5. Verify that the character with ID `b068cab7-76d4-49ec-9066-9259c139d46a` exists and is named `Creator`.
-6. Navigate to the generation/composer view for THIS SAME project.
-7. Type `@Creator` and select the real autocomplete/entity suggestion.
-8. Verify that a real tokenized `Creator` chip/entity is present. Plain text `@Creator` is not sufficient.
-9. If the character URL opens but the remote session is logged into the wrong Google account or lacks access, STOP and report `account/session mismatch` explicitly. Do not fall back to the old project.
+2. Use the existing authenticated remote Chromium/noVNC session and exact Flow project.
+3. Prepare the same simple Clip 1 test prompt with the real tokenized `Creator` entity chip.
+4. Verify the visible **Oluştur** control is enabled (`disabled=false`, `aria-disabled` not true).
+5. Do NOT call `.focus()` from JavaScript and do NOT use CDP `Runtime.evaluate`/DOM activation on the Generate control.
+6. Use the normal desktop keyboard navigation path to move focus to **Oluştur**. Prefer RFB/VNC KeyEvent or ordinary OS-level keyboard input through the visible session.
+7. After each Tab/Shift+Tab step, DOM inspection may be used only to READ `document.activeElement` and verify which visible control owns focus. Do not mutate focus from JS.
+8. Stop navigation as soon as the active element is the actual Generate/Oluştur control.
+9. Record:
+   - active element tag/text/aria-label
+   - whether focus-visible styling appears
+   - enabled/disabled state
+10. Send exactly ONE standard activation:
+   - first choice: Enter key down/up
+   - if the control is semantically a button and Enter is not its documented activation key, use Space down/up instead
+   - do not test both in the same prepared run
+11. Do not send a mouse click afterward and do not retry.
+12. Observe Flow for up to 120 seconds.
 
-## Generation test
+## Instrumentation
 
-Only after the real `@Creator` chip is verified:
+Keep the existing event logger active and record relevant events around the Generate control:
+- keydown
+- keyup
+- focus
+- blur
+- click (if keyboard activation synthesizes one)
+- `event.isTrusted`
+- key/code
+- target
+- activeElement
 
-### Clip 1
-- `@Creator`
-- crispy fried chicken tender hook
-- pick up food + deep glossy sauce dip
-- natural eager expression, subtle smile
+Also record Flow outcome:
+- generation progress appeared?
+- unusual-activity error?
+- generic failed card?
+- new playable video?
+- if playable: resolution/FPS/duration
 
-### Clip 2
-- same `@Creator`
-- Start Frame = clean 8–9s frame from Clip 1
-- bite + crunchy texture reveal + subtle satisfied reaction
+## Success criterion
 
-### Clip 3
-- same `@Creator`
-- Start Frame = clean 8–9s frame from Clip 2
-- glaze/final bite + small approving smile/nod
+Success means the keyboard UI path produces one new playable Clip 1 without a manual noVNC mouse click.
 
-Every clip must preserve:
-- same face/facial geometry
-- same hairstyle/facial hair
-- same age/skin tone
-- same simple dark wardrobe
-- same table/plate/background/lighting/camera distance
+If successful, STOP after Clip 1. Do not proceed to Clip 2/3 in this diagnostic run.
 
-If a clip visibly drifts in identity, reject/regenerate that clip and do not use its continuation frame.
-
-## Fallback policy
-
-Primary path is the real `Creator` Character Asset.
-
-Do not use Ingredients fallback unless the character exists but Flow temporarily cannot insert the entity chip after you have diagnosed the exact UI/tokenization failure. If fallback is used, clearly state it in the report.
+If unsuccessful, report the exact browser event chain and Flow result. Do not try to imitate human timing/trajectory or otherwise evade platform controls.
 
 ## Reporting
 
 Update and push:
 - `HERMES_TEST_REPORT.md`
 - `HERMES_STATUS.md`
+- `GENERATE_EVENT_COMPARISON.md` if present
 
-Report:
-- active Flow project ID
-- detected Character ID/name
-- whether Creator asset was accessible
-- whether real `@Creator` chip was inserted for Clip 1/2/3
-- whether Clip 1/2/3 generated
-- Clip 1→2 identity result
-- Clip 2→3 identity result
-- face/hair/wardrobe/scene drift
-- any regeneration attempts
-- fallback usage
-- final output path
-- exact blocker if unsuccessful
-
-Commit/push only code and markdown reports to `fix/character-consistency`.
-Do not commit videos, images, screenshots, cookies, secrets, or caches.
+Do not commit videos, screenshots, cookies, secrets, caches, or generated media.
 Do not merge `main` or PR #1.
