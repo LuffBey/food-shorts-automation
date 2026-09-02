@@ -1,70 +1,68 @@
 # HERMES_TEST_REPORT — Flow Character Consistency
 
-**Date:** 2026-09-02
+**Date:** 2026-09-03
 **Branch:** `fix/character-consistency`
-**Base commit under test:** `0a999e1ff949a2a6a1a782b010138ea98ef07bf4` (`fix: preserve character identity across 10s Flow clips`)
+**Commit under test:** pending commit for this implementation
 
 ## Scope
 
-Validate the character-reference and continuity upload path against a real Google Flow session, then produce three 10-second clips only if the Flow UI accepts the reference and generation can be verified.
+Implemented and smoke-tested the Character Asset-first architecture for the Food Discovery three-clip (3 × 10 second) ASMR Flow pipeline. The target concept is crispy fried chicken tenders with glossy dipping sauce.
 
-## Environment and access evidence
+## Code changes
 
-- A real authenticated Google Flow page was opened at `https://labs.google/fx/tr/tools/flow` through Chromium CDP on port `9222`.
-- A new Flow project was created: `01d7d238-5897-4495-bf29-3c43dea8ce9f`.
-- The Flow **Characters → New character** screen was reached and exposed one live `input[type=file]` with `accept="image/*"`, `multiple=true`, and `disabled=false`.
-- `v4_frame_1.jpg` was copied locally as `creator_face_ref.jpg` solely as an uncommitted test fixture. Visual review confirms it is a close facial reference (short dark hair, trimmed stubble, dark crew-neck), but it is not committed to this repository.
+- Replaced `food_discovery_engine.py` with a maintainable CDP implementation.
+- Added `CharacterAssetManager` that opens Flow Characters, searches for a reusable `Creator` asset, reuses it if found, and otherwise attempts character creation using up to two local reference images.
+- Added a reactive upload path: `DOM.setFileInputFiles`, followed by bubbling `input`, `change`, `dragenter`, `dragover`, and `drop` events.
+- Added verified `@Creator` insertion: it opens autocomplete, selects a visible Creator candidate, and requires a non-plain-text token/chip node. It does **not** silently claim identity lock when only literal text exists.
+- Added all three persistent locks to every clip prompt: identity, scene, and negative constraints.
+- Added per-clip failure stopping, start-frame attachment checks, and `8s`/`9s` continuation-frame extraction so a failed clip cannot be propagated into the chain.
+- Preserved CDP Flow connection, browser-side video download, FFmpeg continuity-frame extraction, normalization, and concat output path conventions.
 
-## Live upload probe
+## Live Flow evidence
 
-The CDP call `DOM.setFileInputFiles` assigned `creator_face_ref.jpg` to the live Flow file input. The browser-side state immediately verified:
+A real authenticated Flow project was connected through Chromium CDP port 9222:
 
-```text
-input.files = [{ name: "creator_face_ref.jpg", size: 127320, type: "image/jpeg" }]
-```
+`https://labs.google/fx/tr/tools/flow/project/01d7d238-5897-4495-bf29-3c43dea8ce9f/characters`
 
-However, the Flow UI did **not** render a media attachment/preview or filename, and `document.body.innerText` did not contain `creator_face_ref.jpg`. The UI’s visible submit/create button remained enabled but did not initiate a character-generation job after both CDP mouse and DOM `.click()` attempts. No user-visible policy rejection, explicit validation error, or loading/progress state was present.
+Character Asset creation was attempted in the live **Yeni karakter** screen using:
 
-**Result:** CDP-level file assignment passed; Flow application-level attachment ingestion was not verified.
+`/root/hermes-projects/food-discovery-automation/creator_face_ref.jpg`
 
-## Code fixes made during the live probe
+### Character Asset creation
 
-Two small reliability fixes were made in `food_discovery_engine.py`:
+**Result: not successful.**
 
-1. `_verify_upload()` now checks `input.files` in addition to filename/preview DOM text. This correctly distinguishes a successful CDP assignment from a rendered Flow attachment.
-2. `set_prompt()` now programmatically focuses the Slate editor and uses `Input.insertText`; it also sends a complete raw Ctrl+A / Backspace sequence. The original coordinate-click/key-event path left the Slate editor unfocused in this headless Flow session, so prompts were not reliably replaced.
+- CDP attachment did assign the file: `input.files = ['creator_face_ref.jpg']`.
+- The Flow application did not render a visible attachment name or preview after the reactive event dispatch.
+- The manager therefore returned `blocked-upload-not-ingested` rather than submitting a character generation with unverified input.
+- No reusable `Creator` asset was found in the project during the check.
 
-Validation run:
+### `@Creator` chip insertion
 
-```text
-python3 -m py_compile food_discovery_engine.py  # passed
-git diff --check                               # passed
-```
+**Result: not successful / not attempted past asset gate.**
 
-## Three-clip test status
+Because no reusable `Creator` asset existed and Flow did not ingest the creation upload, there was no valid autocomplete candidate to select. The implementation intentionally fails the chip verification rather than treating plain `@Creator` text as a character token.
 
-| Clip | Intended action | Flow generation | Output file | Face comparison |
-|---|---|---:|---|---|
-| 1 | Pre-bite/deep dip from anchored character | Not run | None | Not assessable |
-| 2 | Post-bite/reaction using prior end frame | Not run | None | Not assessable |
-| 3 | Glaze/drizzle finale using prior end frame | Not run | None | Not assessable |
+### Three-clip production test
 
-No 10-second clips, end frames, or final concatenated video were produced in this run. It would be misleading to claim face consistency or a numerical face-match score without generated output frames.
+**Result: not run to generation.**
 
-## Blocking condition
+The workflow was stopped before Clip 1 because the required primary identity-lock asset could not be created or reused. No generated videos, screenshots, extracted frames, cache, secrets, or temporary media were committed.
 
-The current automation assumes a semantic, role-specific upload control exists in the active generation UI. In the real Flow Character screen, the only observed input is a generic project-level media uploader; setting its files via CDP does not cause the React application to ingest/render the reference asset. The live UI therefore requires a Flow-specific attachment workflow (likely a user-gesture-mediated upload or a different, rendered attachment component) before character creation and the subsequent three-clip pipeline can be verified.
+### Face stability
 
-## Evidence artifacts (intentionally untracked)
+**Result: not evaluable.**
 
-- `flow_character_ui.png` — initial live Character creation UI capture.
-- `flow_character_attachment_attempt.png` — UI capture after the direct attachment attempt.
-- `creator_face_ref.jpg` — local test fixture copied from existing untracked `v4_frame_1.jpg`.
+No new three-clip sequence was produced in this run, so Clip 1→2 and Clip 2→3 face stability cannot be truthfully asserted.
 
-These artifacts are intentionally excluded from the commit, along with all pre-existing untracked videos/images/scripts in the repository root.
+## Verification performed
 
-## Conclusion
+- `python3 -m py_compile food_discovery_engine.py` — passed.
+- Live CDP connection to authenticated Google Flow Characters page — passed.
+- Live attachment-state inspection (`input.files`) — passed at browser DOM level.
+- Live Flow application ingestion / preview verification — failed, correctly blocking creation.
+- Prompt and continuation-frame structural smoke test — passed.
 
-- **Automation code:** syntax and diff checks pass; prompt focus and low-level upload verification were improved and tested against the live DOM.
-- **Reference upload:** file was assigned at CDP level, but not accepted/rendered by Flow’s application UI.
-- **Face consistency across three clips:** **not assessed** because zero Flow clips were generated.
+## Exact diagnosis
+
+The remaining blocker is Flow application-level ingestion of the reference image in the Character creation UI. CDP has set the native file input, but Flow has not accepted it into its React/application state. This is distinct from a missing authentication or missing file-input issue.
