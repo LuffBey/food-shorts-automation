@@ -1,72 +1,92 @@
-# Hermes — Next Action: Run the v6 Identity-Stable Flow Pipeline
+# Hermes — Next Action: Run the Character-Asset Identity Pipeline
 
 Branch: `fix/character-consistency`
-Required commit: `126b3c5e4721e81f54098d48510ccc12bc0c9ffe`
+
+## User bootstrap completed
+
+The user has manually created a reusable Google Flow Character asset named exactly:
+
+`Creator`
+
+Do not attempt to create the character asset again unless it is genuinely missing from the authenticated Flow project.
 
 ## Goal
 
-Run one real 3x10s Google Flow / Omni 1.1 Flash test using the updated Ingredients/References pipeline.
+Run one real 3x10s Google Flow food-ASMR test using `@Creator` as the primary identity lock.
 
-The previous Character-creation workflow is no longer the primary path. Do **not** block on creating a Flow Character asset first.
+The test is successful only if the same creator identity remains stable across all three clips.
 
-## What changed
+## Required flow
 
-- Use **Video > Ingredients/References** with Omni Flash 1.1.
-- Every clip receives the same canonical face image as ingredient #1.
-- Clip 1 receives the initial/base scene image as ingredient #2 when available.
-- Clip 2 receives clip 1's final frame as ingredient #2.
-- Clip 3 receives clip 2's final frame as ingredient #2.
-- File uploads now dispatch real `input` and `change` events after CDP file assignment.
-- If Flow still does not ingest the file, the engine falls back to a synthetic drag/drop upload onto the prompt area.
-- Generation fails fast if the Flow application does not visibly accept the ingredient. Do not continue with text-only generation.
+1. Pull `fix/character-consistency` and use the current HEAD.
+2. Connect to the existing authenticated Flow session on CDP port 9222.
+3. Open the generation UI and verify the reusable character asset `Creator` is visible/available.
+4. For EVERY clip, insert `@Creator` and select the real autocomplete/entity chip. Plain text `@Creator` is not sufficient.
+5. Verify the resulting editor contains a real Creator token/chip before generation.
+6. Use the same scene/wardrobe/lighting constraints in all clips.
+7. Clip 1: hook + pick up food + deep dip.
+8. Clip 2: same `@Creator` + clean continuation frame from Clip 1 + bite/texture reveal/reaction.
+9. Clip 3: same `@Creator` + clean continuation frame from Clip 2 + glaze/final bite/subtle approval.
+10. Prefer a clean frame around 8–9 seconds if the literal final frame is blurred, occluded, malformed, or off-frame.
+11. If a clip visibly changes identity, reject/regenerate that clip and do not propagate its continuation frame.
 
-## Run procedure
+## Identity requirements
 
-1. Pull the branch and verify HEAD is:
-   `126b3c5e4721e81f54098d48510ccc12bc0c9ffe`
+Every clip should preserve:
+- same face and facial geometry
+- same hair and facial hair
+- same apparent age and skin tone
+- same black/simple wardrobe
+- same body proportions
+- same table, plate, background, camera distance and lighting
 
-2. Keep the existing authenticated Chromium / Flow session running on CDP port 9222.
+Character behavior should remain natural: relaxed, genuinely hungry, small natural smiles, subtle approving reactions, no exaggerated acting.
 
-3. Ensure a valid face reference exists. Preferred path:
-   `/root/hermes-projects/food-discovery-automation/creator_face_ref.jpg`
+## Fallback
 
-   If the dedicated file is absent, the pipeline can fall back to the supplied base image, but a clean close/medium character reference is strongly preferred.
+If the real `@Creator` chip cannot be inserted even though the asset exists, diagnose the autocomplete/tokenization UI and fix that code first.
 
-4. Run a single 3x10s smoke test. Use the same performer in all three clips.
+Only if Character asset reuse is temporarily impossible may you test the existing Ingredients/References fallback. Clearly report that fallback was used. Do not silently treat it as equivalent to `@Creator`.
 
-5. Watch the logs for these success messages for **every** ingredient:
-   - `Flow application attachment accepted`
-   or
-   - `Drag/drop attachment accepted`
+## Test concept
 
-   A log that only says `File input events dispatched` is NOT sufficient proof of ingestion.
+Use a visually strong ASMR food concept such as crispy fried chicken tenders with glossy dipping sauce.
 
-6. Confirm Omni Flash 1.1, Ingredients/References, 9:16, x1, 10s are active before generation.
+Target output:
+- 3 x 10 second clips
+- vertical 9:16
+- attention-grabbing first 2 seconds
+- satisfying food texture and bite moments
+- subtle, natural creator reactions
+- final concatenated 20–30 second short
 
-7. Do not merge PR #1 yet.
+## Required report updates
 
-## If it fails
+Overwrite/update both:
+- `HERMES_TEST_REPORT.md`
+- `HERMES_STATUS.md`
 
-Write/update `HERMES_TEST_REPORT.md` with:
-
-- exact UI text around the model/mode controls
-- all visible buttons and aria-labels around the prompt box
-- all `input[type=file]` metadata
-- whether direct input ingestion succeeded
-- whether drag/drop ingestion succeeded
-- exact exception/stack trace
-- screenshot paths (do not commit generated media)
-
-If ingredient upload succeeds but Generate fails, capture the visible prompt-area DOM text and generate button label/state.
-
-If all 3 clips generate, report:
-
-- Clip 1→2 same identity? yes/no/uncertain
-- Clip 2→3 same identity? yes/no/uncertain
+Report explicitly:
+- current branch and commit SHA
+- `Creator` asset detected: yes/no
+- real `@Creator` chip inserted for Clip 1/2/3: yes/no
+- Clip 1 generated: yes/no
+- Clip 2 generated: yes/no
+- Clip 3 generated: yes/no
+- Clip 1→2 same identity: yes/no/uncertain
+- Clip 2→3 same identity: yes/no/uncertain
 - face drift
 - hairstyle drift
 - wardrobe drift
-- background/table drift
-- final output path
+- scene drift
+- whether any clip was regenerated due to identity failure
+- whether Ingredients fallback was used
+- final output path if successful
+- exact blocker and DOM/UI evidence if unsuccessful
 
-Commit only code/report changes; do not commit generated videos or reference images.
+## Git rules
+
+Commit/push only code and markdown reports to `fix/character-consistency`.
+Do not commit generated videos, reference images, screenshots, cache, cookies or secrets.
+Do not merge `main`.
+Do not merge PR #1.
