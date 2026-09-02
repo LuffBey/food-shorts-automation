@@ -150,6 +150,59 @@ Observed every 5 seconds from 0 through 120 seconds:
 
 The corrected pointer target was confirmed and the single normal OS-level click was delivered to the calculated Generate-button coordinate. Flow nevertheless made no state transition in 120 seconds: it neither started generation nor emitted the prior unusual-activity refusal, and it produced no new video. **Clip 2/3 were not attempted.**
 
+## Corrected Web-Content Coordinate XTEST Test (2026-09-03)
+
+The prior root target omitted browser chrome. This test corrected the coordinate conversion without changing the working Creator/project/prompt preparation code and without stealth, fingerprint, proxy/VPN, CAPTCHA, CDP/DOM click, or retry behavior.
+
+### Fresh pre-click CDP measurements
+
+Read immediately before the click:
+
+| Measurement | Value |
+|---|---:|
+| `window.screenX`, `window.screenY` | `(10, 10)` |
+| `window.outerWidth`, `window.outerHeight` | `(1050, 780)` |
+| `window.innerWidth`, `window.innerHeight` | `(1050, 659)` |
+| `devicePixelRatio` | `1` |
+| Generate DOM rect | `(left=785, top=586, width=32, height=32)` |
+| Generate DOM centre | `(801, 602)` |
+
+Derived fresh browser chrome delta: `outerHeight - innerHeight = 121`. The content origin was therefore `(screenX + (outerWidth-innerWidth)/2, screenY + (outerHeight-innerHeight)) = (10, 131)`, producing corrected root target **`(811, 733)`**. No fixed `121` constant is embedded in the helper; it receives the live measurements per invocation.
+
+### Technical helper correction
+
+`click_generate_visible_ui.py` now:
+
+1. declares ctypes signatures for `XTestFakeMotionEvent`, `XTestFakeButtonEvent`, `XSync`, and `XQueryPointer`;
+2. raises/focuses the visible Chromium window and executes `XSync(display, False)`;
+3. moves the pointer with `XTestFakeMotionEvent(display, 0, root_x, root_y, 0)`, then syncs;
+4. reads actual root pointer position via `XQueryPointer`, converts it back to viewport coordinates, and fails closed before clicking unless it is inside the live DOM Generate rectangle;
+5. sends exactly one primary press, syncs, waits 120ms, sends exactly one release, and syncs.
+
+### One-click evidence
+
+- Fresh real `Creator` Slate entity chip was prepared and DOM verified before the event.
+- Pointer before motion: `(811, 612)`.
+- Target root pointer coordinate: `(811, 733)`.
+- Pointer after XTEST motion: `(811, 733)`.
+- Converted pointer viewport coordinate: `(801, 602)`.
+- `Generate` DOM rectangle: `(785, 586, 32, 32)`.
+- Converted pointer inside Generate rectangle: **yes**.
+- Exactly one XTEST primary-button press/release was sent.
+
+### 120-second Flow observation
+
+- Generation progress: **not observed**.
+- `Olağan dışı etkinlik`: **not observed**.
+- Other visible failure: **not observed**.
+- New video: **not generated**; Flow remained at two pre-existing video elements throughout 120 seconds.
+- New resolution/FPS/duration: **N/A**.
+- Clip 2/3: **not attempted**.
+
+### Result
+
+The X11 target was corrected, the pointer was proven to map into the live Generate DOM rectangle, and one normal OS-level click was sent. Flow still did not transition, generate, or reject in the observation period. Thus this rules out the prior vertical browser-chrome coordinate error; it does not reproduce the successful actual human noVNC click.
+
 ## Exact blocker and next action
 
 The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.

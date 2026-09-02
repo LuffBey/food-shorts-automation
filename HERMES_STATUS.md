@@ -60,6 +60,20 @@ A fresh Clip 1 test was prepared with the same real `Creator` chip and unchanged
 
 This is a clean, non-stealth, non-retried OS-level test. The remaining issue is now that Flow does not react to the synthetic X11 event even when pointer placement is confirmed; it differs from an actual human noVNC click, which did generate Clip 1 successfully.
 
+## Corrected web-content-coordinate XTEST test
+
+The coordinate conversion was corrected without changing the existing Creator/project/prompt preparation logic. Fresh CDP values immediately before the click were `screen=(10,10)`, `outer=1050×780`, `inner=1050×659`, `DPR=1`, and Generate DOM rect `(785,586,32,32)`. The helper derived (rather than hard-coded) vertical chrome `121` and used content origin `(10,131)`, so the corrected Generate root target was **`(811,733)`**.
+
+The helper now explicitly declares ctypes signatures for `XTestFakeMotionEvent`, `XTestFakeButtonEvent`, `XSync`, and `XQueryPointer`; it focuses/syncs Chromium, uses official XTEST motion, synchronizes, maps the actual root pointer back to viewport coordinates, fails closed if outside the Generate DOM rect, then sends exactly one normal primary press/release.
+
+- Pointer before: `(811,612)`.
+- Pointer after XTEST motion: `(811,733)`.
+- Converted back to viewport: `(801,602)`, inside the Generate rect: **yes**.
+- Exactly one OS-level click was sent; no CDP/DOM click, stealth/fingerprint, proxy/VPN, CAPTCHA handling, or retry was used.
+- During 120 seconds: no generation progress, no `Olağan dışı etkinlik`, no other failure, and no new video (two pre-existing videos remained). Clip 2/3 were not attempted.
+
+**Conclusion:** the previous browser-chrome coordinate error is eliminated. Even a verified XTEST click inside the live Generate rectangle caused no Flow state transition, unlike an actual human click through noVNC.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.
