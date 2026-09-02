@@ -89,6 +89,28 @@ The prior direct-CDP Generate attempt was rejected with Flow's "unusual activity
 
 This changes the diagnosis: `Creator` asset access, real chip insertion, prompt setup, and Flow video generation are all working. The remaining automation issue is specifically the direct CDP Generate interaction; a human-in-the-loop visible UI click is a functional fallback.
 
+## OS-Level Visible UI Click Diagnostic (2026-09-03)
+
+A dedicated, transparent helper, `click_generate_visible_ui.py`, was added for this diagnostic only. It uses X11 on the existing `:99` visible Chromium/noVNC display: it raises/focuses the existing Chromium X11 window, moves the real X11 pointer, and emits one XTEST primary-button press/release. It contains no CDP mouse event, stealth/fingerprint change, proxy/VPN change, CAPTCHA handling, or retry loop.
+
+### Pre-click preparation
+
+- Exact project: `0bd8a011-4555-49c2-adc8-ba87b68466a9`.
+- Real tokenized `Creator` chip was freshly inserted and DOM-verified before the click.
+- Prepared prompt: the same simple Clip 1 vertical 9:16 chicken-tender deep-dip prompt.
+- Visible Chromium X11 window: ID `0x200003`, bounds `left=10`, `top=10`, `width=1050`, `height=780`.
+- Generate button viewport rectangle: `left=785`, `top=586`, `width=32`, `height=32`; centre `(801, 602)`.
+- Browser viewport: `1050×659`, `devicePixelRatio=1`; root-screen target coordinate calculated as `(811, 612)`.
+
+### One-click outcome
+
+- Interaction method: one OS-level X11 pointer move + one left-button press/release aimed at root coordinate **(811, 612)** on visible Chromium window `0x200003`.
+- Flow's visible result: **no visible state transition** during the 120-second observation window.
+- DOM observation after the click: editor content and `Creator` chip remained present; no generation-progress text; no `Olağan dışı etkinlik` error; video count stayed at the pre-existing **2** videos.
+- Resolution/fps/duration: **not applicable**—this click did not produce a new video.
+
+Post-test pointer inspection found the X11 pointer still at `(1279, 20)`, proving the original helper's `XWarpPointer` call was malformed and did not move the pointer to the intended Generate coordinate. The helper has been corrected for the X11 function signature, but **no second Generate click was sent**, as required. Therefore the honest test status is: **inconclusive — the one sent event was not confirmed to land on the button; neither `unusual activity` nor a new video was observed.**
+
 ## Exact blocker and next action
 
 The identity-lock precondition is proven in the exact user-created Flow project: the `Creator` asset is accessible, the real tokenized entity chip can be inserted, and Flow can generate when the user clicks **Oluştur** in visible Chromium/noVNC. The remaining blocker is only direct-CDP generation triggering Flow's automated-activity detection.

@@ -33,6 +33,19 @@ No Clip 1 media was generated, therefore Clips 2–3, continuation frames, visua
 
 Detaylı Codex handover notu: `CODEX_HANDOVER.md`; canlı test kanıtı: `HERMES_TEST_REPORT.md`.
 
+## OS-level visible UI diagnostic (single click)
+
+A one-shot diagnostic was run without modifying the existing Creator/project/prompt preparation flow. The helper `click_generate_visible_ui.py` uses X11 focus, pointer movement, and one normal XTEST left-button press/release on visible Chromium/noVNC; it does not use CDP mouse input, stealth, spoofing, proxy/VPN, CAPTCHA handling, or retries.
+
+- Exact project and a real tokenized `Creator` chip were freshly prepared.
+- Visible Chromium window: `0x200003`, `1050×780` at `(10,10)`.
+- Generate button viewport rect: `(785,586,32,32)`; calculated X11 root target: `(811,612)`; browser viewport `1050×659`, DPR `1`.
+- One OS-level click was sent, then the page was observed for 120 seconds.
+- No new video appeared; Flow showed neither a generation-progress state nor `Olağan dışı etkinlik`; editor/chip remained unchanged and the video count stayed at two pre-existing videos.
+- Post-test X11 pointer inspection showed `(1279,20)`, so the initial helper's pointer-warp call was malformed and the event cannot be confirmed as landing on Generate. The helper has been corrected, but **no retry was sent** per test constraint.
+
+**Result:** inconclusive. This was not a confirmed successful visible-UI click, and it did not produce an unusual-activity refusal either. A future run may use the corrected helper for exactly one new click after explicitly authorizing a fresh test.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.
