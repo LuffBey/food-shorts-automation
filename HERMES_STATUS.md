@@ -46,6 +46,20 @@ A one-shot diagnostic was run without modifying the existing Creator/project/pro
 
 **Result:** inconclusive. This was not a confirmed successful visible-UI click, and it did not produce an unusual-activity refusal either. A future run may use the corrected helper for exactly one new click after explicitly authorizing a fresh test.
 
+## Corrected OS-level Generate test
+
+A fresh Clip 1 test was prepared with the same real `Creator` chip and unchanged vertical 9:16 deep-dip prompt. Before clicking, the X11 pointer was `(1279,20)` and the mapped visible Chromium window `0x200003` had a computed Generate target `(811,612)` inside the button's `(785,586,32,32)` viewport rectangle. The corrected helper then sent exactly one normal X11 pointer move plus one primary-button press/release.
+
+- **Pointer target verified:** yes. Post-click X11 pointer was `(811,612)`, exactly matching target.
+- **Click reached calculated Generate coordinate:** yes; no CDP/DOM click was used.
+- **Generation started:** no visible or DOM progress state in 120 seconds.
+- **Olağan dışı etkinlik:** no.
+- **New video:** no; video count remained two pre-existing videos.
+- **New video resolution/FPS/duration:** N/A.
+- **Clip 2/3:** not attempted.
+
+This is a clean, non-stealth, non-retried OS-level test. The remaining issue is now that Flow does not react to the synthetic X11 event even when pointer placement is confirmed; it differs from an actual human noVNC click, which did generate Clip 1 successfully.
+
 ## Otomasyon için kalan mesele
 
 `Creator` asset, gerçek chip, prompt ve Flow video modelinin çalıştığı kanıtlandı. Kalan mesele yalnızca CDP ile doğrudan Generate tıklamasının Flow tarafından "olağan dışı etkinlik" olarak reddedilmesi. Üretim tetikleme adımı insan-onaylı görünür Chromium/noVNC tıklaması olarak bırakılırsa akış çalışıyor.
