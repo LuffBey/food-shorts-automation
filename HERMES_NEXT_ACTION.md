@@ -1,92 +1,90 @@
-# Hermes — Next Action: Run the Character-Asset Identity Pipeline
+# Hermes — Next Action: Use the User-Created Creator Asset
 
 Branch: `fix/character-consistency`
 
-## User bootstrap completed
+## Exact Flow target
 
-The user has manually created a reusable Google Flow Character asset named exactly:
+The user manually created the reusable character asset in this exact Flow project:
 
-`Creator`
+- Project ID: `0bd8a011-4555-49c2-adc8-ba87b68466a9`
+- Character ID: `b068cab7-76d4-49ec-9066-9259c139d46a`
+- Character name: `Creator`
+- Character URL: `https://labs.google/fx/tr/tools/flow/project/0bd8a011-4555-49c2-adc8-ba87b68466a9/character/b068cab7-76d4-49ec-9066-9259c139d46a`
 
-Do not attempt to create the character asset again unless it is genuinely missing from the authenticated Flow project.
+Do NOT use the old project `01d7d238-5897-4495-bf29-3c43dea8ce9f` for this test.
 
 ## Goal
 
-Run one real 3x10s Google Flow food-ASMR test using `@Creator` as the primary identity lock.
+Open the exact project above in the authenticated remote Chromium session, verify the existing `Creator` asset, insert a real `@Creator` entity chip, then run the 3x10s identity-stable food-ASMR pipeline.
 
-The test is successful only if the same creator identity remains stable across all three clips.
+## Required procedure
 
-## Required flow
+1. Pull the latest `fix/character-consistency` branch.
+2. Connect to the existing authenticated Chromium session on CDP port 9222.
+3. Navigate the remote browser to:
+   `https://labs.google/fx/tr/tools/flow/project/0bd8a011-4555-49c2-adc8-ba87b68466a9/character/b068cab7-76d4-49ec-9066-9259c139d46a`
+4. Verify that the active project ID is exactly `0bd8a011-4555-49c2-adc8-ba87b68466a9`.
+5. Verify that the character with ID `b068cab7-76d4-49ec-9066-9259c139d46a` exists and is named `Creator`.
+6. Navigate to the generation/composer view for THIS SAME project.
+7. Type `@Creator` and select the real autocomplete/entity suggestion.
+8. Verify that a real tokenized `Creator` chip/entity is present. Plain text `@Creator` is not sufficient.
+9. If the character URL opens but the remote session is logged into the wrong Google account or lacks access, STOP and report `account/session mismatch` explicitly. Do not fall back to the old project.
 
-1. Pull `fix/character-consistency` and use the current HEAD.
-2. Connect to the existing authenticated Flow session on CDP port 9222.
-3. Open the generation UI and verify the reusable character asset `Creator` is visible/available.
-4. For EVERY clip, insert `@Creator` and select the real autocomplete/entity chip. Plain text `@Creator` is not sufficient.
-5. Verify the resulting editor contains a real Creator token/chip before generation.
-6. Use the same scene/wardrobe/lighting constraints in all clips.
-7. Clip 1: hook + pick up food + deep dip.
-8. Clip 2: same `@Creator` + clean continuation frame from Clip 1 + bite/texture reveal/reaction.
-9. Clip 3: same `@Creator` + clean continuation frame from Clip 2 + glaze/final bite/subtle approval.
-10. Prefer a clean frame around 8–9 seconds if the literal final frame is blurred, occluded, malformed, or off-frame.
-11. If a clip visibly changes identity, reject/regenerate that clip and do not propagate its continuation frame.
+## Generation test
 
-## Identity requirements
+Only after the real `@Creator` chip is verified:
 
-Every clip should preserve:
-- same face and facial geometry
-- same hair and facial hair
-- same apparent age and skin tone
-- same black/simple wardrobe
-- same body proportions
-- same table, plate, background, camera distance and lighting
+### Clip 1
+- `@Creator`
+- crispy fried chicken tender hook
+- pick up food + deep glossy sauce dip
+- natural eager expression, subtle smile
 
-Character behavior should remain natural: relaxed, genuinely hungry, small natural smiles, subtle approving reactions, no exaggerated acting.
+### Clip 2
+- same `@Creator`
+- Start Frame = clean 8–9s frame from Clip 1
+- bite + crunchy texture reveal + subtle satisfied reaction
 
-## Fallback
+### Clip 3
+- same `@Creator`
+- Start Frame = clean 8–9s frame from Clip 2
+- glaze/final bite + small approving smile/nod
 
-If the real `@Creator` chip cannot be inserted even though the asset exists, diagnose the autocomplete/tokenization UI and fix that code first.
+Every clip must preserve:
+- same face/facial geometry
+- same hairstyle/facial hair
+- same age/skin tone
+- same simple dark wardrobe
+- same table/plate/background/lighting/camera distance
 
-Only if Character asset reuse is temporarily impossible may you test the existing Ingredients/References fallback. Clearly report that fallback was used. Do not silently treat it as equivalent to `@Creator`.
+If a clip visibly drifts in identity, reject/regenerate that clip and do not use its continuation frame.
 
-## Test concept
+## Fallback policy
 
-Use a visually strong ASMR food concept such as crispy fried chicken tenders with glossy dipping sauce.
+Primary path is the real `Creator` Character Asset.
 
-Target output:
-- 3 x 10 second clips
-- vertical 9:16
-- attention-grabbing first 2 seconds
-- satisfying food texture and bite moments
-- subtle, natural creator reactions
-- final concatenated 20–30 second short
+Do not use Ingredients fallback unless the character exists but Flow temporarily cannot insert the entity chip after you have diagnosed the exact UI/tokenization failure. If fallback is used, clearly state it in the report.
 
-## Required report updates
+## Reporting
 
-Overwrite/update both:
+Update and push:
 - `HERMES_TEST_REPORT.md`
 - `HERMES_STATUS.md`
 
-Report explicitly:
-- current branch and commit SHA
-- `Creator` asset detected: yes/no
-- real `@Creator` chip inserted for Clip 1/2/3: yes/no
-- Clip 1 generated: yes/no
-- Clip 2 generated: yes/no
-- Clip 3 generated: yes/no
-- Clip 1→2 same identity: yes/no/uncertain
-- Clip 2→3 same identity: yes/no/uncertain
-- face drift
-- hairstyle drift
-- wardrobe drift
-- scene drift
-- whether any clip was regenerated due to identity failure
-- whether Ingredients fallback was used
-- final output path if successful
-- exact blocker and DOM/UI evidence if unsuccessful
-
-## Git rules
+Report:
+- active Flow project ID
+- detected Character ID/name
+- whether Creator asset was accessible
+- whether real `@Creator` chip was inserted for Clip 1/2/3
+- whether Clip 1/2/3 generated
+- Clip 1→2 identity result
+- Clip 2→3 identity result
+- face/hair/wardrobe/scene drift
+- any regeneration attempts
+- fallback usage
+- final output path
+- exact blocker if unsuccessful
 
 Commit/push only code and markdown reports to `fix/character-consistency`.
-Do not commit generated videos, reference images, screenshots, cache, cookies or secrets.
-Do not merge `main`.
-Do not merge PR #1.
+Do not commit videos, images, screenshots, cookies, secrets, or caches.
+Do not merge `main` or PR #1.
