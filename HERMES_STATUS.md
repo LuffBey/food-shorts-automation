@@ -1,4 +1,12 @@
-# HERMES STATUS - Kanal Görsel Kimliği 3x10s Üretimi
+# HERMES STATUS — Omni 1.1 Scene-Extension Migration
+
+- **Architecture:** Updated; implementation and live validation pending.
+- **Active design:** `ARCHITECTURE.md`
+- **Active Hermes instruction:** `FLOW_AGENT_OMNI_SCENE_EXTENSION_PROMPT.md`
+- **Immediate task:** `HERMES_NEXT_ACTION.md`
+- **Important:** The independent 3×10 result below is a historical baseline, not proof that the new scene-extension pipeline has passed.
+
+## Historical baseline — Kanal Görsel Kimliği 3×10 Üretimi
 
 - **Branch:** `fix/character-consistency` (Commit `f9c963f5068900eb3096b2ede513bd2200648bc7` tabanlı)
 - **Kural Seti:** `FLOW_AGENT_CHANNEL_IDENTITY_PROMPT.md`

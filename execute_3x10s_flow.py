@@ -1,3 +1,9 @@
+"""LEGACY: independent 3x10 generation experiment.
+
+The active production design is ARCHITECTURE.md and must use Omni 1.1 scene
+extension. Do not invoke this module as the default pipeline.
+"""
+
 import json
 import time
 import base64

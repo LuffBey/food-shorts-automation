@@ -1,4 +1,9 @@
-# Google Flow Agent Kanal Görsel Kimliği & 3x10s Shorts Üretim Raporu
+# Historical Baseline — Google Flow Agent Kanal Görsel Kimliği & 3×10s Shorts Üretim Raporu
+
+> This report predates the Omni 1.1 scene-extension migration. Its PASS result
+> applies only to the former independent-clip test and must not be presented as
+> validation of the active architecture. See `ARCHITECTURE.md` and
+> `HERMES_NEXT_ACTION.md` for the required new validation.
 
 ## 1. Görev ve Branch Güncellemesi
 - **Hedef Branch:** `fix/character-consistency`

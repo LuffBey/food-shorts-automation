@@ -1,7 +1,11 @@
-"""Google Flow food-shorts automation with character-first continuity.
+"""Shared Google Flow browser client and legacy character-first helpers.
 
 This module drives an already authenticated Chromium instance exposed on CDP port 9222.
 It does not log in, publish, or commit generated media.
+
+The current production architecture is documented in ARCHITECTURE.md. Existing
+multi-clip orchestration in this repository is legacy until Hermes implements
+the Omni 1.1 scene-extension parent chain.
 """
 import base64
 import json

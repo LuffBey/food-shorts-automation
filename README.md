@@ -1,22 +1,41 @@
-# 🍗 Food Discovery AI Video Automation Engine
+# Food Discovery AI Video Automation
 
-Automated, end-to-end AI Food & Mukbang YouTube Shorts / TikTok production pipeline using Google Flow (Gemini Omni 1.1 Flash / Veo 3.1) and CDP (Chrome DevTools Protocol).
+Google Flow / Gemini Omni 1.1 Flash based pipeline for language-independent food Shorts, Reels and TikTok videos.
 
-## 📌 Architecture & Features
-- **3x10s Match-Cut Narrative Flow:** 
-  1. *Pre-Bite / Deep Dip (0-10s)*
-  2. *Post-Bite / Crunch Reaction (10-20s)*
-  3. *Glaze Drizzle & Thumbs Up Finale (20-30s)*
-- **Anti-Morphing & Continuity:** Utilizes Start Frame (Keyframe Interpolation) between clips to avoid face and prop drift.
-- **Automated Post-Production:** FFmpeg automated color saturation boost (+12% Vibrance), 1080x1920 9:16 vertical crop, 30 FPS lossless muxing.
+## Active architecture
 
-## 📂 Core Files
-- `food_discovery_engine.py`: Main CDP automation client and multi-clip production engine.
-- `CODEX_HANDOVER.md`: Detailed integration and task handover guide for Codex.
-- `creator_face_ref.jpg`: High-resolution character face reference.
-- `real_frame_1.jpg` & `real_frame_2.jpg`: Full table & platter scene references.
+The production path is now **one 10-second base clip plus two contextual scene extensions**. Independent 3×10-second generations and extracted continuation frames are legacy experiments, not the default pipeline.
 
-## 🚀 How to Run
-```bash
-python3 food_discovery_engine.py
+```text
+approved references
+  -> 10s Omni 1.1 base clip
+  -> QC
+  -> scene extension 1 from accepted video
+  -> QC
+  -> scene extension 2 from accepted chain
+  -> QC
+  -> duration/audio normalization
+  -> final 9:16 master
 ```
+
+Read in this order:
+
+1. `ARCHITECTURE.md` — system design and quality gates.
+2. `FLOW_AGENT_OMNI_SCENE_EXTENSION_PROMPT.md` — executable Hermes instruction.
+3. `HERMES_NEXT_ACTION.md` — immediate implementation/test assignment.
+4. `CODEX_HANDOVER.md` — environment and migration notes.
+
+## Non-negotiable output rules
+
+- Same licensed Creator, burnt-orange set, walnut table, white bowl and food-state lineage.
+- No dialogue, voice-over, intelligible vocalization or speech-like lip movement in any language.
+- Never extend a failed generation.
+- Never conceal identity, prop or food-state drift in post-production.
+- Do not silently fall back to independent clip generation.
+- Use only supported Flow controls; do not bypass service safeguards.
+
+## Legacy files
+
+Scripts and documents named `3x10s`, `continuation`, `frame`, `concat` or `editorial` describe earlier experiments. They remain for traceability until Hermes implements and validates the Omni scene-extension path. They must not be treated as active production instructions.
+
+Generated videos, screenshots, extracted frames, browser profiles, cookies and credentials are not committed.

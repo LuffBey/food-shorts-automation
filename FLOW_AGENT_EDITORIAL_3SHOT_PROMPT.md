@@ -1,4 +1,9 @@
-# Google Flow Agent — Editorial 3-Shot Food Shorts Prompt
+# Google Flow Agent — Editorial 3-Shot Food Shorts Prompt (Legacy Fallback)
+
+> Superseded on 2026-09-03 by `ARCHITECTURE.md` and
+> `FLOW_AGENT_OMNI_SCENE_EXTENSION_PROMPT.md`. Do not use this independent
+> three-generation workflow by default. It may be selected only as an explicit
+> fallback after reporting that Omni 1.1 scene extension is unavailable.
 
 Google Flow Agent ile global YouTube Shorts, Instagram Reels ve TikTok kullanımı için 3 x 10 saniyelik, toplam yaklaşık 30 saniye süren fotogerçekçi bir premium food-ASMR videosu üret.
 
