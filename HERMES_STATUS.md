@@ -1,17 +1,11 @@
-# HERMES STATUS - Google Flow Agent Modu Doğrulaması
+# HERMES STATUS - Kanal Görsel Kimliği 3x10s Üretimi
 
-## Durum Özeti
-- **Branch:** `fix/character-consistency`
-- **Tarih:** 2026-09-03
-- **Test:** Google Flow Dahili Agent Modu Üretim Testi
+- **Branch:** `fix/character-consistency` (Commit `f9c963f5068900eb3096b2ede513bd2200648bc7` tabanlı)
+- **Kural Seti:** `FLOW_AGENT_CHANNEL_IDENTITY_PROMPT.md`
+- **Durum:** Tamamlandı (Tüm QC kriterleri PASS)
 
-## Doğrulanan Metrikler ve Sonuçlar
-1. **Agent Modu:** Açıldı ve aktif edildi (`yes`).
-2. **Confirm-before-generating:** `Hiçbir zaman` (Never) olarak kaydedildi ve doğrulandı (`yes`).
-3. **Agent Otomasyon Tetiklemesi:** Normal generate butonu yerine Ajan'ın kendi akışı (`arrow_forward`) üzerinden prompt verildi ve Ajan onay sormadan üretimi kendi başlattı (`yes`).
-4. **Oluşan Video:** `agent_test_video_1.mp4`
-   - **Çözünürlük:** 720x1280 (9:16)
-   - **FPS:** 24 fps
-   - **Süre:** 10.00s (240 kare)
-   - **Karakter & Sahne Tutarlılığı:** Creator kimliği, siyah tişört, ahşap masa ve sosa daldırma aksiyonu kare kare doğrulandı.
-5. **Hata/Engel:** Olağan dışı etkinlik veya genel hata alınmadı; süreç başarıyla tamamlandı.
+## Doğrulama Özeti
+- **Master Fon & Masa:** Yanık turuncu fon (`#D9682E`), ceviz masa (`#7A4A2A`), beyaz seramik kase, koyu amber-kırmızı BBQ sosu.
+- **Konuşma Yasağı:** 3 klipte de Creator'ın ağzı tamamen kapalı, konuşma veya dudak senkronu yok.
+- **Tek Parça & Isırık Takibi:** S0 (unbitten) ➔ S1 (alt %25 soslu) ➔ S2 (tek ısırıklı) ➔ S3 (doku & onay).
+- **Çıktı Dosyası:** `/root/hermes-projects/food-discovery-automation/brand_channel_identity_shorts_30s.mp4` (`30.036 s`, `720x1280`, 24 fps).

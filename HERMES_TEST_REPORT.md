@@ -1,41 +1,46 @@
-# Google Flow Agent Test Raporu
+# Google Flow Agent Kanal Görsel Kimliği & 3x10s Shorts Üretim Raporu
 
-## Test Özeti
-- **Tarih:** 2026-09-03
-- **Branch:** `fix/character-consistency`
-- **Hedef Proje:** `0bd8a011-4555-49c2-adc8-ba87b68466a9`
-- **Test Edilen Yöntem:** Google Flow UI üzerindeki Agent (Ajan) modu ve dahili prompt submission akışı (`arrow_forward`) üzerinden otomatik video üretimi.
+## 1. Görev ve Branch Güncellemesi
+- **Hedef Branch:** `fix/character-consistency`
+- **Hedef Commit:** `f9c963f5068900eb3096b2ede513bd2200648bc7`
+- **Referans Doküman:** `FLOW_AGENT_CHANNEL_IDENTITY_PROMPT.md`
 
 ---
 
-## 1. Hazırlık ve Arayüz Doğrulamaları
-- **Flow Oturumu:** Kimliği doğrulanmış Chromium oturumu başarıyla bağlandı.
-- **Proje ve Karakter:** `0bd8a011-4555-49c2-adc8-ba87b68466a9` projesinde `Creator` karakter asset'inin mevcut olduğu doğrulandı.
-- **Agent Modu:** Arayüzdeki "Ajan" sekmesi başarıyla açıldı.
+## 2. Aşama 1–3: Master Brand Set ve Sınır Kareleri Doğrulaması
+1. **Master Brand Set (`BrandSet_Master.jpg` & `S0_Master.jpg`):**
+   - **Arka Plan:** Düz mat yanık-turuncu fon (`#D9682E`), sıfır mutfak/dolap/dekor/lamba (`PASS`).
+   - **Masa:** Yatay damarlı koyu ceviz ahşap masa (`#7A4A2A`), kasap bloğu/damalı desen yok (`PASS`).
+   - **Kase & Sos:** Masada hafif solda beyaz seramik kase, içinde koyu amber-kırmızı parlak BBQ sosu (`PASS`).
+   - **Kıyafet & Karakter:** Düz mat siyah bisiklet yaka tişört, `@Creator` kimliği (`PASS`).
+   - **Food Prop:** Tek parça, altın-kahverengi çıtır unbitten kızarmış tavuk tender (`PASS`).
+2. **Sınır Kareleri (S0 ➔ S1 ➔ S2 ➔ S3):**
+   - **S0:** Unbitten kuru tender, ağız kapalı tebessüm (`PASS`).
+   - **S1 (Clip 1 Sonu / Clip 2 Başı):** Yalnızca alt %25 kısmı koyu amber-kırmızı sosla kaplı, ısırılmamış, ağız tamamen kapalı (`PASS`).
+   - **S2 (Clip 2 Sonu / Clip 3 Başı):** Üst ucunda tek net ısırık izi, alt sos aynı, ağız kapalı çiğneme tebessümü (`PASS`).
+   - **S3 (Clip 3 Sonu / Final):** Tek ısırıklı tender dokusu kameraya gösterilmiş, kapalı ağızlı onay gülümsemesi (`PASS`).
 
-## 2. Ajan Ayarları (Agent Settings)
-Ajan Ayarları modalı açılarak aşağıdaki konfigürasyon uygulandı ve kaydedildiği gözle doğrulandı:
-- **Confirm before generating (Üretme işleminden önce onaylayın):** `Hiçbir zaman` (Never) olarak seçildi.
-- **Orientation (En-Boy Oranı):** `9:16` (Dikey) olarak ayarlandı.
-- **Outputs (Çıktı Sayısı):** `x1` seçildi.
-- **Model:** `Omni 1.1 Flash` (varsayılan model).
-- **Kaydet:** Ayarlar kaydedildi, modal kapatıldı ve sayfa yenilendiğinde ayarların kalıcı olduğu teyit edildi.
+---
 
-## 3. Test İcrası (Agent Test 1)
-- **Prompt:**
-  ```text
-  Using @Creator, create one 10-second vertical video sitting at a warm wooden table, holding a crispy fried chicken tender, slowly dipping it into glossy sauce, subtle natural smile, plain black crew-neck shirt, warm lighting, realistic food ASMR, appetizing texture, same creator identity, 9:16.
-  ```
-- **Tetikleme:** Standart generate butonu yerine Ajan'ın kendi gönderme/tetikleme butonu (`arrow_forward`) kullanıldı.
-- **Ajan Tepkisi:** Ajan prompt'u işledi ("Düşünüyorum..." durumuna geçti), onay istemeden doğrudan video üretim sürecini (%21 -> %28 -> %100) başlattı.
+## 3. Aşama 4: Klip Üretimleri ve QC Kapıları
+- **Clip 1 (Dip & Hold S1):**
+  - **Dosya:** `/root/hermes-projects/food-discovery-automation/brand_clip_1.mp4`
+  - **Süre / Format:** `10.005 s` | `720x1280` (9:16) | `24 fps`
+  - **QC:** Turuncu fon, ceviz masa, koyu sos, unbitten tender, ağız kapalı (konuşma/dudak oynatma yok) (`PASS`).
+- **Clip 2 (Single Bite & S2):**
+  - **Dosya:** `/root/hermes-projects/food-discovery-automation/brand_clip_2.mp4`
+  - **Süre / Format:** `10.005 s` | `720x1280` (9:16) | `24 fps`
+  - **QC:** S1 başlangıcıyla dikişsiz devam etti, tek net ısırık alındı, ağız kapalı çiğnendi, konuşma yok (`PASS`).
+- **Clip 3 (Texture Reveal & S3 Reaction):**
+  - **Dosya:** `/root/hermes-projects/food-discovery-automation/brand_clip_3.mp4`
+  - **Süre / Format:** `10.005 s` | `720x1280` (9:16) | `24 fps`
+  - **QC:** İkinci ısırık alınmadı, doku gösterildi, mutfağa dönüşmedi, konuşma/fısıltı yok, sessiz onay tebessümü (`PASS`).
 
-## 4. Üretim ve Medya Sonuçları
-- **Hata Durumu:** Herhangi bir "Olağan dışı etkinlik" veya generic hata çıkmadı. Üretim başarıyla tamamlandı.
-- **Oluşan Video:** `agent_test_video_1.mp4`
-- **Çözünürlük:** `720x1280` (9:16 vertical)
-- **FPS:** `24 fps`
-- **Süre:** `10.005 s` (240 video frame)
-- **İçerik Analizi:** 
-  - Frame 0: Siyah tişörtlü karakter ahşap masada elinde çıtır tavuk ile gülümsüyor.
-  - Frame 120: Tavuğun parlak sosa batırıldığı yakın çekim ASMR sahnesi.
-  - Frame 239: Karakterin lokmayı alıp gözlerini kapatarak tadını çıkardığı tutarlı sahne.
+---
+
+## 4. Final Concat & Çıktı
+- **Video Dosyası:** `/root/hermes-projects/food-discovery-automation/brand_channel_identity_shorts_30s.mp4`
+- **Toplam Süre:** `30.036 s`
+- **Çözünürlük & FPS:** `720x1280` (9:16 dikey) | `24 fps`
+- **Boyut:** `9,890,361 bytes`
+- **Tüm QC Kapıları:** PASS (Sıfır konuşma, sıfır mutfak kayması, tam sahne/renk/yiyecek kilitleri).
