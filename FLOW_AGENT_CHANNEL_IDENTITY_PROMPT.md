@@ -96,9 +96,25 @@ Dört kare arasında şunlar değişmemeli:
 - Output: 1
 - Görünüm: fotogerçekçi
 - Ses: doğal food-ASMR
-- Konuşma ve dudak senkronu: yok
+- Konuşma, seslendirme ve dudak senkronu: kesinlikle yok
 - Müzik: yok
 - Yalnızca hafif ortam sesi, sos sesi ve tek gerçekçi crunch kullanılmalı.
+
+### Global ve dile bağımsız içerik kilidi
+
+Bu kanal global ve dile bağımsızdır. Creator hiçbir klipte konuşmamalı.
+
+- Sözcük, cümle, selamlama, yorum, fısıltı, mırıldanma, ünlem veya anlaşılabilir insan sesi üretme.
+- Voice-over, narrator, off-camera speech, arka plan konuşması veya başka bir insan sesi kullanma.
+- Creator kameraya bakarken konuşuyormuş gibi dudak oynatmamalı.
+- Sessiz konuşma taklidi, lip-sync veya konuşmaya benzeyen ritmik ağız hareketleri oluşturma.
+- Ağız hareketleri yalnızca fiziksel olarak gerekli ısırma ve doğal, kısa çiğneme hareketleriyle sınırlı olmalı.
+- Çiğneme bittikten sonra ağız kapalı kalmalı; reaksiyon yalnız gözler, hafif gülümseme ve küçük başparmak işaretiyle verilmelidir.
+- Memnuniyet sesi, `mmm`, inilti, kahkaha, nefesli ünlem veya abartılı yutkunma sesi kullanma.
+- Ekran yazısı, altyazı, konuşma balonu veya dil içeren grafik üretme.
+- Ses kanalında yalnız yiyeceğe ait gerçekçi ASMR sesleri ve çok düşük seviyeli nötr oda ambiyansı bulunmalı.
+
+Herhangi bir konuşma, konuşma benzeri dudak hareketi veya dil içeren ekran yazısı oluşursa klibi başarısız say ve concat işlemine alma.
 
 ### Clip 1 — Dip
 
@@ -133,7 +149,7 @@ Son 1 saniye boyunca `S2` düzeninde sabit kal.
 
 Creator ikinci bir ısırık almaz. Mevcut tek-ısırıklı tender'ı hafifçe kameraya yaklaştırarak iç dokuyu gösterir. İç kısım doğal, sulu ve lifli görünmeli; yiyecek parçalanmamalı veya başka bir ürüne dönüşmemeli.
 
-Creator kısa, kontrollü ve doğal bir memnuniyet gülümsemesi gösterir. Diğer eliyle küçük bir başparmak işareti yapar. Son kare `S3` ile eşleşir.
+Creator konuşmadan, ağzı kapalı biçimde kısa ve kontrollü bir memnuniyet gülümsemesi gösterir. Dudaklarını sözcük oluşturur gibi hareket ettirmez. Diğer eliyle küçük bir başparmak işareti yapar. Son kare `S3` ile eşleşir.
 
 ## Mutlak sahne kilidi
 
@@ -154,6 +170,8 @@ Her üç klip için:
 - Yiyeceği geri büyütme.
 - Isırık izini kapatma, taşıma veya yeniden şekillendirme.
 - Tender'ı bir elden diğerine geçirme.
+- Creator'ı konuşturma veya konuşuyormuş gibi dudaklarını oynatma.
+- Voice-over, anlatıcı, insan sesi, altyazı veya ekran yazısı ekleme.
 
 Kamera tripod üzerinde kilitli, tek çekim gibi davranmalı.
 
@@ -168,6 +186,7 @@ Her üretimden sonra yalnız prompta güvenme; videoyu görsel olarak doğrula.
 - Sos koyu amber-kırmızı değilse
 - Kase farklıysa
 - Creator veya kamera ölçeği değişmişse
+- Creator konuşursa, konuşuyormuş gibi dudaklarını oynatırsa veya ekranda yazı oluşursa
 
 ### Clip 2 red kriterleri
 
@@ -176,6 +195,7 @@ Her üretimden sonra yalnız prompta güvenme; videoyu görsel olarak doğrula.
 - Birden fazla ısırık oluşmuşsa
 - Tender farklı bir parçaya dönüşmüşse
 - Kamera kesmesi varsa
+- Isırma ve doğal çiğneme dışında konuşma benzeri ağız hareketi veya insan sesi varsa
 
 ### Clip 3 red kriterleri
 
@@ -184,6 +204,7 @@ Her üretimden sonra yalnız prompta güvenme; videoyu görsel olarak doğrula.
 - İkinci ısırık oluşmuşsa
 - Kase kaybolmuş veya büyümüşse
 - Kamera açısı değişmişse
+- Creator konuşursa, sesli reaksiyon verirse, konuşma benzeri dudak hareketi yaparsa veya ekranda yazı oluşursa
 
 Kliplerden biri başarısızsa yalnızca başarısız klibi yeniden üret. Üç klip de onaylanmadan FFmpeg concat veya YouTube upload yapma.
 
@@ -207,6 +228,8 @@ Her karşılaştırmada aşağıdaki alanları ayrı ayrı `PASS` veya `FAIL` ol
 - tender şekli
 - ısırık durumu
 - tender'ı tutan el
+- konuşma, insan sesi ve konuşma benzeri dudak hareketi bulunmaması
+- ekranda yazı veya altyazı bulunmaması
 
 Herhangi bir `FAIL` varsa concat yapma.
 
